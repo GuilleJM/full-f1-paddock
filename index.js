@@ -33,13 +33,14 @@ try {
     const auto4 = new Auto(77, 'Mercedes', 'W12', 'duros', 341, 100);
 
     // Configurar desgaste inicial
-    [auto1, auto2, auto3, auto4].forEach(auto => {
+    /*[auto1, auto2, auto3, auto4].forEach(auto => {
         auto.configurarDesgasteInicial({
-            neumaticos: 100,
-            combustible: 100,
-            motor: 100
+            neumaticos: 0,
+            combustible: 60,
+            motor: 0
         });
-    });
+    });*/
+
 
     // Crear pilotos con habilidades
     const piloto1 = new Piloto('Charles Leclerc', 'Mónaco', 0);
@@ -61,6 +62,48 @@ try {
     piloto2.conducirAuto(auto2);
     piloto3.conducirAuto(auto3);
     piloto4.conducirAuto(auto4);
+
+
+    // Asignar pilotos a autos
+    auto1.esConducidoPor(piloto1);
+    auto2.esConducidoPor(piloto2);
+    auto3.esConducidoPor(piloto3);
+    auto4.esConducidoPor(piloto4);
+
+    auto1.configurarDesgasteInicial({
+        desgasteNeumaticos: 0,
+        desgasteMotor: 0,
+        combustible: 30
+    });
+
+    console.log();
+
+    console.log(auto1.estaEnCondicionesOptimas());
+
+    console.log();
+
+    console.log(auto1.instalarPiezaNueva({
+        tipo: "motor",
+        especificacion: "nueva versión"
+    }))
+
+    console.log();
+
+    console.log(auto1.calcularDesgaste({
+        numero: 15,
+        velocidad: 210,
+        condiciones: { temperatura: 25, humedad: 40 },
+        longitudCircuito: 5.739,
+        tipoDeCircuito: "baja degradación"
+    }))
+
+    console.log();
+    
+    console.log(auto1.realizarPitStop({tipoNeumaticos: "blandos", combustible: 30}));
+
+    console.log();
+
+    console.log(auto1.obtenerEstadisticasDesgaste());
 
     // Crear estrategias de carrera
     const estrategiaFerrari = new Estrategia(
