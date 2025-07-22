@@ -16,10 +16,6 @@ class Auto {
         this.tiempoReparacion = 0;
     }
 
-    esConducidoPor(piloto) {
-        this.conductor = piloto;
-    }
-
     /**
      * Configura los niveles iniciales de desgaste del auto
      * @param {Object} configuracion - Objeto con niveles iniciales de desgaste
@@ -38,13 +34,15 @@ class Auto {
      * });
      */
     configurarDesgasteInicial(configuracion) {
+
+        const valoresDeConfiguracion = Object.values(configuracion);
         
         if (!configuracion) {
             throw new Error('No se proporcionó configuración de desgaste inicial');
         }
 
 
-        const valorInvalido = Object.values(configuracion).some((parametro) => parametro < 0 || parametro > 100)
+        const valorInvalido = valoresDeConfiguracion.some((parametro) => parametro < 0 || parametro > 100)
         
         if(valorInvalido){
             throw new Error("Los parámetros deben encontrarse dentro del rango entre 0 y 100");
@@ -54,7 +52,11 @@ class Auto {
         this.desgasteMotor = configuracion.desgasteMotor;
         this.combustible = configuracion.combustible;
 
-        console.log(this.desgasteNeumaticos, this.desgasteMotor, this.combustible);
+        return{
+            desgasteNeumaticos: this.desgasteNeumaticos,
+            desgasteMotor: this.desgasteMotor,
+            combustible: this.combustible
+        }
     }
 
     /**
@@ -73,7 +75,7 @@ class Auto {
      */
     estaEnCondicionesOptimas() {
         let tienePilotoEnCarrera = true;
-        if(this.estado == 'en_carrera' && (this.conductor == undefined || this.conductor == null)){
+        if((this.estado).toLowerCase() == 'en_carrera' && (this.conductor == undefined || this.conductor == null)){
             tienePilotoEnCarrera = false;
         }
         return (
@@ -97,7 +99,7 @@ class Auto {
      */
     cambiarNeumaticos(tipoNeumaticos) {
         const tiposValidos = ['blandos', 'medios', 'duros'];
-        if (!tiposValidos.includes(tipoNeumaticos)) {
+        if (!tiposValidos.includes(tipoNeumaticos.toLowerCase())) {
             throw new Error('El tipo de neumáticos no es válido');
         }
 
@@ -158,7 +160,7 @@ class Auto {
      */
     instalarPiezaNueva(pieza) {
         // Verificar tipo de pieza
-        if (!['motor', 'aerodinámica', 'neumáticos', 'suspensión'].includes(pieza.tipo)) {
+        if (!['motor', 'aerodinámica', 'neumáticos', 'suspensión'].includes((pieza.tipo).toLowerCase())) {
             throw new Error(`El tipo de pieza debe ser uno de los siguientes: motor, aerodinámica, neumáticos, suspensión`);
         }
 
@@ -201,7 +203,7 @@ class Auto {
 
         let vueltasMaximasNeumaticos = 40;
 
-        if(vuelta.tipoDeCircuito == "baja degradación"){
+        if((vuelta.tipoDeCircuito).toLowerCase() == "baja degradación"){
             vueltasMaximasNeumaticos *= 1.2;
         }else{
             vueltasMaximasNeumaticos *= 0.8;
@@ -292,9 +294,9 @@ class Auto {
      */
     obtenerEstadisticasDesgaste() {
         return {
-            desgasteNeumaticos: this.desgasteNeumaticos,
-            nivelCombustible: this.combustible,
-            estadoMotor: this.desgasteMotor,
+            neumaticos: this.desgasteNeumaticos,
+            combustible: this.combustible,
+            motor: this.desgasteMotor,
             estado: this.estado
         };
     }
