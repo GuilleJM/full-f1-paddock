@@ -50,6 +50,33 @@ class Piloto {
      */
     establecerHabilidades(habilidades) {
         // Implementar lógica para establecer habilidades
+
+         const valoresDeHabilidades = Object.values(habilidades)
+
+        if (!habilidades) {
+            throw new Error('No se proporcionaron habilidades del piloto');
+        }
+
+
+        const valorInvalido = valoresDeHabilidades.some((parametro) => parametro < 0 || parametro > 100)
+        
+        if(valorInvalido){
+            throw new Error("Los parámetros deben encontrarse dentro del rango entre 0 y 100");
+        }
+
+        this.velocidad = habilidades.velocidad;
+        this.consistencia = habilidades.consistencia;
+        this.agresividad = habilidades.agresividad;
+
+        const sumaDeHabilidades = valoresDeHabilidades.reduce((acumulador, parametro) => acumulador + parametro, 0);
+        this.habilidad =  (sumaDeHabilidades / valoresDeHabilidades.length).toFixed(0);
+
+        return {
+            velocidad: this.velocidad,
+            consistencia: this.consistencia,
+            agresividad: this.agresividad,
+            nivelTotal: this.habilidad
+        }      
     }
 
     /**
@@ -67,7 +94,7 @@ class Piloto {
      * // Returns: true si cumple con los requisitos
      */
     puedeConducirAuto(auto) {
-        // Implementar lógica para validar si puede conducir el auto
+        // Implementar lógica para validar si puede conducir el auto PREGUNTAR A EZE CÓMO CALCULAR
     }
 
     /**
@@ -89,6 +116,26 @@ class Piloto {
      */
     conducirAuto(auto) {
         // Implementar lógica para asignar auto al piloto
+
+        if(auto.conductor != null){
+            throw new Error("El auto ya está ocupado");
+        }
+
+        /*if(!this.puedeConducirAuto(auto)){
+            throw new Error("El auto y el piloto no son compatibles");
+        }*/
+
+        this.auto = auto;
+        this.autosConducidos.push(auto);
+        auto.conductor = this;
+
+        return {
+            piloto: this.nombre,
+            auto: auto.marca + " " + auto.modelo,
+            numero: auto.numero,
+            estado: "asignado"
+        } 
+
     }
 
     /**
@@ -115,6 +162,47 @@ class Piloto {
      */
     calcularRendimiento(condiciones) {
         // Implementar lógica para calcular rendimiento
+
+        const pesos = [0.4, 0.4, 0.2];
+
+        const parametros = [this.velocidad, this.agresividad, this.consistencia];
+
+        let factorClima = 1.0;
+        let factorTemperatura = 1.02;
+        let factorHumedad = 1.01;
+
+        if(condiciones.clima.toLowerCase() == "mojado"){
+            factorClima = 0.9;
+        }else if(condiciones.clima.toLowerCase() == "lluvia"){
+            factorClima = 0.8;
+        }
+
+        if(condiciones.temperatura < 15){
+            factorTemperatura = 0.95;
+        }else if(condiciones.temperatura > 35){
+            factorTemperatura = 0.97;
+        }
+
+        if(condiciones.humedad < 20){
+            factorHumedad = 0.98;
+        }else if(condiciones.temperatura > 70){
+            factorHumedad = 0.96;
+        }
+
+        this.agresividad *= factorClima;
+
+        this.consistencia *= factorClima;
+
+        this.velocidad *= factorHumedad * factorTemperatura * factorClima;
+
+        const rendimientoTotal = this.promedioPonderado(parametros, pesos);
+    
+        return {
+            velocidad: (this.velocidad).toFixed(2),
+            consistencia: (this.consistencia).toFixed(2),
+            agresividad: (this.agresividad).toFixed(2),
+            rendimientoTotal: (rendimientoTotal).toFixed(2)
+        } 
     }
 
     /**
@@ -139,7 +227,7 @@ class Piloto {
      * // }
      */
     adaptarEstiloConduccion(condiciones) {
-        // Implementar lógica para adaptar estilo de conducción
+        // Implementar lógica para adaptar estilo de conducción PREGUNTAR A EZE CÓMO CALCULAR
     }
 
     /**
@@ -161,6 +249,17 @@ class Piloto {
      */
     registrarVictoria() {
         // Implementar lógica para registrar victoria
+
+        this.victorias++;
+        this.puntosCampeonato += 25;
+        this.estadisticas.victorias++;
+
+        return {
+            victorias: this.victorias,
+            puntosCampeonato: this.puntosCampeonato,
+            estadisticas: this.estadisticas
+        } 
+
     }
 
     /**
@@ -183,6 +282,16 @@ class Piloto {
      */
     registrarPodio(posicion) {
         // Implementar lógica para registrar podio
+
+        this.podios++;
+        this.puntosCampeonato += 18;
+        this.estadisticas.podios++;
+
+        return {
+            podios: this.podios,
+            puntosCampeonato: this.puntosCampeonato,
+            estadisticas: this.estadisticas
+        }
     }
 
     /**
@@ -204,6 +313,16 @@ class Piloto {
      */
     registrarVueltaRapida() {
         // Implementar lógica para registrar vuelta rápida
+
+        this.vueltasRapidas++;
+        this.puntosCampeonato++;
+        this.estadisticas.vueltasRapidas++;
+
+        return {
+            vueltasRapidas: this.vueltasRapidas,
+            puntosCampeonato: this.puntosCampeonato,
+            estadisticas: this.estadisticas
+        }
     }
 
     /**
@@ -234,6 +353,43 @@ class Piloto {
      */
     obtenerEstadisticas() {
         // Implementar lógica para obtener estadísticas
+
+        const habilidades = {
+            velocidad: this.velocidad,
+            consistencia: this.consistencia,
+            agresividad: this.agresividad
+        };
+
+        const rendimiento = {
+            adelantamientos: this.adelantamientos,
+            errores: this.errores,
+            vueltasCompletadas: this.vueltasCompletadas
+        }
+
+
+        return {
+            general: this.estadisticas,
+            habilidades: habilidades,
+            rendimiento: rendimiento
+        }
+
+    }
+
+
+    promedioPonderado(valores, pesos) {
+    if (valores.length !== pesos.length || valores.length === 0) {
+        throw new Error("Las listas deben tener el mismo tamaño y no estar vacías.");
+    }
+
+    let sumaPonderada = 0;
+    let sumaPesos = 0;
+
+    for (let i = 0; i < valores.length; i++) {
+        sumaPonderada += valores[i] * pesos[i];
+        sumaPesos += pesos[i];
+    }
+
+    return sumaPonderada / sumaPesos;
     }
 }
 
