@@ -57,24 +57,36 @@ try {
         });
     });
 
+    console.log(piloto1.establecerHabilidades({
+            velocidad: Math.floor(Math.random() * 100),
+            consistencia: Math.floor(Math.random() * 100),
+            agresividad: Math.floor(Math.random() * 100)
+        }));
+    
+    console.log(piloto1.calcularRendimiento({
+        clima: "seco",
+        temperatura: 20,
+        humedad: 40
+      }));
+        
     // Asignar pilotos a autos
-    piloto1.conducirAuto(auto1);
+    console.log(piloto1.conducirAuto(auto1));
     piloto2.conducirAuto(auto2);
     piloto3.conducirAuto(auto3);
     piloto4.conducirAuto(auto4);
 
+    console.log(piloto1.registrarVictoria());
+    console.log(piloto1.registrarPodio());
+    console.log(piloto1.registrarVueltaRapida());
 
-    // Asignar pilotos a autos
-    auto1.esConducidoPor(piloto1);
-    auto2.esConducidoPor(piloto2);
-    auto3.esConducidoPor(piloto3);
-    auto4.esConducidoPor(piloto4);
+    console.log(piloto1.estadisticas);
 
-    auto1.configurarDesgasteInicial({
+
+    console.log(auto1.configurarDesgasteInicial({
         desgasteNeumaticos: 0,
         desgasteMotor: 0,
         combustible: 30
-    });
+    }));
 
     console.log();
 
