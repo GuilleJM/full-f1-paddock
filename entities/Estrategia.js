@@ -69,6 +69,7 @@ class Estrategia {
      */
     agresividadConsistente() {
         // Implementar lógica para validar agresividad
+        // Test
     }
 
     /**
