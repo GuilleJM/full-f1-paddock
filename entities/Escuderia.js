@@ -136,7 +136,7 @@ class Escuderia {
         }
 
         const estadisticas = this.desarrollo[area].estadisticas;
-        const umbralCombinado = 20; // Suma mínima de ambas propiedades
+        const umbralCombinado = 0; // Suma mínima de ambas propiedades
 
         let estadistica1, estadistica2;
         if (area === 'motor') {
