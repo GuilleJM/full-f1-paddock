@@ -5,6 +5,45 @@ const Carrera = require('./entities/Carrera');
 const Circuito = require('./entities/Circuito');
 const Estrategia = require('./entities/Estrategia');
 
+// Sección de pruebas para Escuderia
+console.log('\n=== Pruebas Unitarias para Escuderia ===');
+const escuderiaPrueba = new Escuderia('Prueba', 'España', 1000000);
+
+console.log('Prueba 1: invertirEnDesarrollo');
+const inversion = escuderiaPrueba.invertirEnDesarrollo('motor', 200000);
+console.assert(inversion.area === 'motor', 'Error: area debe ser "motor"');
+console.assert(inversion.montoInvertido === 200000, 'Error: montoInvertido debe ser 200000');
+console.assert(inversion.presupuestoRestante === 800000, 'Error: presupuestoRestante debe ser 800000');
+console.assert(inversion.nivelAnterior === 0, 'Error: nivelAnterior debe ser 0');
+console.assert(inversion.nivelNuevo === 2, 'Error: nivelNuevo debe ser 2');
+console.assert(escuderiaPrueba.desarrollo.motor.estadisticas.potencia === 10, 'Error: potencia debe ser 15');
+console.assert(escuderiaPrueba.desarrollo.motor.estadisticas.eficiencia === 10, 'Error: eficiencia debe ser 10');
+console.log('Prueba 1 completada');
+
+console.log('Prueba 2: calcularMejora');
+const mejora = escuderiaPrueba.calcularMejora('motor', 200000);
+console.assert(mejora.area === 'motor', 'Error: area debe ser "motor"');
+console.assert(mejora.mejoraPotencia === 10, 'Error: mejoraPotencia debe ser 15');
+console.assert(mejora.mejoraEficiencia === 10, 'Error: mejoraEficiencia debe ser 10');
+console.assert(mejora.nivelAlcanzado === 2, 'Error: nivelAlcanzado debe ser 2');
+console.log('Prueba 2 completada');
+
+console.log('Prueba 3: esDesarrolloExitoso (progreso suficiente)');
+const esExitoso1 = escuderiaPrueba.esDesarrolloExitoso('motor');
+console.assert(esExitoso1 === true, 'Error: esDesarrolloExitoso debe devolver true (suma de stats >= 20)');
+console.log('Prueba 3 completada');
+
+console.log('Prueba 4: obtenerEstadisticas');
+console.log(escuderiaPrueba.obtenerEstadisticas());
+console.log('Prueba 4 completada');
+
+console.log('Prueba 5: actualizarEstadisticas');
+const actualizacion = escuderiaPrueba.actualizarEstadisticas('podio', 3);
+console.assert(actualizacion.tipo === 'podio', 'Error: tipo debe ser "podio"');
+console.assert(actualizacion.cantidadAnterior === 0, 'Error: cantidadAnterior debe ser 0');
+console.assert(actualizacion.cantidadNueva === 3, 'Error: cantidadNueva debe ser 3');
+console.assert(actualizacion.estadisticasActualizadas.podios === 3, 'Error: podios debe ser 3');
+console.log('Prueba 5 completada');
 
 try {
     // Crear circuito con condiciones climáticas
@@ -24,7 +63,7 @@ try {
 
     // Invertir en desarrollo
     escuderia1.invertirEnDesarrollo('motor', 50000000);
-    escuderia2.invertirEnDesarrollo('aerodinámica', 60000000);
+    escuderia2.invertirEnDesarrollo('aerodinamica', 60000000);
 
     // Crear autos con sistema de desgaste
     const auto1 = new Auto(16, 'Ferrari', 'SF21', 'blandos', 340, 100);
