@@ -135,7 +135,6 @@ class Escuderia {
             return false;
         }
 
-        const nivel = this.desarrollo[area].nivel;
         const estadisticas = this.desarrollo[area].estadisticas;
         const umbralCombinado = 20; // Suma mínima de ambas propiedades
 
