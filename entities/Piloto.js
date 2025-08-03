@@ -283,8 +283,14 @@ class Piloto {
     registrarPodio(posicion) {
         // Implementar lógica para registrar podio
 
+        let puntosSumados = 18;
+
+        if(posicion == 3){
+            puntosSumados = 15;
+        }
+
         this.podios++;
-        this.puntosCampeonato += 18;
+        this.puntosCampeonato += puntosSumados;
         this.estadisticas.podios++;
 
         return {
