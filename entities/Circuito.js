@@ -11,6 +11,7 @@ class Circuito {
             temperatura: 25,
             humedad: 50
         };
+        this.tipo = "baja_degradacion";
     }
 
     /**
