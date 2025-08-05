@@ -15,6 +15,7 @@ class Carrera {
         };
         this.vueltaRapida = null;
         this.estado = "en_espera";
+        this.posicionesDeSalida = [];
     }
 
     /**
@@ -46,7 +47,8 @@ class Carrera {
 
         for(let i = 0; i <= this.numeroVueltas; i++){
             this.vueltaActual++;
-            this.autosParticipantes.forEach((auto) => auto.registrarVueltaDeCarrera);
+            this.autosParticipantes.forEach((auto) => auto.registrarVueltaDeCarrera());
+            console.log("Resultados parciales en la vuelta " + i +": " + this.obtenerResultados);
         }
 
         return{
@@ -133,28 +135,35 @@ class Carrera {
     realizarClasificacion() {
         // Implementar lógica para realizar la clasificación
 
-        this.autosParticipantes.forEach((auto) => this.registrarVueltaDeClasificacion(auto));
+        this.autosParticipantes.forEach((auto) => this.registrarVuelta(auto));
         const grillaOrdenadaq1 = this.autosParticipantes.sort((a,b) => a.tiempoVuelta - b.tiempoVuelta);
         this.q1 = grillaOrdenadaq1.map((auto) => {return {piloto: auto.conductor, tiempo: auto.tiempoVuelta};});
 
         const autosEliminadosEnq1 = this.q1.slice(-5);
         const autosEnq2 = this.autosParticipantes.slice(0, -5);
 
-        autosEnq2.forEach((auto) => this.registrarVueltaDeClasificacion(auto));
+        autosEnq2.forEach((auto) => this.registrarVuelta(auto));
         const grillaOrdenadaq2 = autosEnq2.sort((a,b) => a.tiempoVuelta - b.tiempoVuelta);
         this.q2 = grillaOrdenadaq2.map((auto) => {return {piloto: auto.conductor, tiempo: auto.tiempoVuelta};});
 
         const autosEliminadosEnq2 = this.q2.slice(-5);
         const autosEnq3 = autosEnq2.slice(0, -5);
 
-        autosEnq3.forEach((auto) => this.registrarVueltaDeClasificacion(auto));
+        autosEnq3.forEach((auto) => this.registrarVuelta(auto));
         const grillaOrdenadaq3 = autosEnq3.sort((a,b) => a.tiempoVuelta - b.tiempoVuelta);
         this.q3 = grillaOrdenadaq3.map((auto) => {return {piloto: auto.conductor, tiempo: auto.tiempoVuelta};});
 
-        const posiciones = [...this.q3, ...autosEliminadosEnq2, ...autosEliminadosEnq1].map((piloto, index) => {
+        this.posicionesDeSalida = [...this.q3, ...autosEliminadosEnq2, ...autosEliminadosEnq1].map((piloto, index) => {
             const {tiempo, ...resto} = piloto;
             return {...resto, posicion: index + 1};
         });
+
+        return{
+            q1: this.q1,
+            q2: this.q2,
+            q3: this.q3,
+            posiciones: this.posicionesDeSalida
+        }
     }
 
     /**
@@ -184,7 +193,7 @@ class Carrera {
 
         if((auto.neumaticos).toLowerCase() == "blandos"){
             factorNeumaticos = 0.95;
-        }else{
+        }else if((auto.neumaticos).toLowerCase() == "duros"){
             factorNeumaticos = 1.05;
         }
 
@@ -192,7 +201,7 @@ class Carrera {
 
         if((this.condicionesClimaticas.clima).toLowerCase() == "mojado"){
             factorClima = 1.10;
-        }else{
+        }else if((this.condicionesClimaticas.clima).toLowerCase() == "lluvia"){
             factorClima = 1.15;
         }
 
@@ -207,15 +216,10 @@ class Carrera {
         return auto.tiempoVuelta
     }
 
-    registrarVueltaDeClasificacion(auto) {
-        // Implementar lógica para registrar una vuelta
-        return this.registrarVuelta(auto);
-    }
-
     registrarVueltaDeCarrera(auto) {
         // Implementar lógica para registrar una vuelta
         const tiempoVuelta = this.registrarVuelta(auto);
-        let esVueltaRapida = false
+        let esVueltaRapida = false;
 
         auto.kmRecorridos += this.circuito.longitudKm;
         auto.tiempoCarrera += tiempoVuelta;
@@ -257,17 +261,19 @@ class Carrera {
     finalizarCarrera() {
         // Implementar lógica para finalizar la carrera
 
-        this.autosParticipantes.sort((a,b) => a.tiempoCarrera - b.tiempoCarrera);
+        const posicionesFinales= this.autosParticipantes.sort((a,b) => a.tiempoCarrera - b.tiempoCarrera);
 
-        const ganador = {piloto: this.autosParticipantes[0].conductor.nombre, tiempo: this.autosParticipantes[0].tiempoCarrera};
-        this.autosParticipantes[0].conductor.registrarVictoria();
+        const ganador = {piloto: posicionesFinales.conductor.nombre, tiempo: posicionesFinales[0].tiempoCarrera};
+        posicionesFinales[0].conductor.registrarVictoria();
 
-        const podio = [{piloto: this.autosParticipantes[1].conductor.nombre, tiempo: "+" + (this.autosParticipantes[0].tiempoCarrera - this.autosParticipantes[1].tiempoCarrera)},
-                       {piloto: this.autosParticipantes[2].conductor.nombre, tiempo: "+" + (this.autosParticipantes[0].tiempoCarrera - this.autosParticipantes[2].tiempoCarrera)}];
-        this.autosParticipantes[1].conductor.registrarPodio(2);
-        this.autosParticipantes[2].conductor.registrarPodio(3);
+        const podio = [{piloto: posicionesFinales[1].conductor.nombre, tiempo: "+" + (posicionesFinales[0].tiempoCarrera - posicionesFinales[1].tiempoCarrera)},
+                       {piloto: posicionesFinales[2].conductor.nombre, tiempo: "+" + (posicionesFinales[0].tiempoCarrera - posicionesFinales[2].tiempoCarrera)}];
+        posicionesFinales[1].conductor.registrarPodio(2);
+        posicionesFinales[2].conductor.registrarPodio(3);
 
         this.vueltaRapida.piloto.registrarVueltaRapida();
+
+        /*ALGUIEN QUE CALCULE LOS ADELANTAMIENTOS Y ERRORES DEL PILOTO (UN ERROR ES UNA PERDIDA DE POSICION)*/
 
         return{
             podio: [ganador, podio],
