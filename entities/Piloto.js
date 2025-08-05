@@ -94,7 +94,18 @@ class Piloto {
      * // Returns: true si cumple con los requisitos
      */
     puedeConducirAuto(auto) {
-        // Implementar lógica para validar si puede conducir el auto PREGUNTAR A EZE CÓMO CALCULAR
+        // Implementar lógica para validar si puede conducir el auto 
+
+        //Logica implementada: El piloto debe tener una habilidad mínima de 60 para manejar cualquier auto,
+        //el auto debe estar desocupado, y la relación entre habilidad y velocidad máxima debe ser mayor o igual a 0.27
+        //(Esto último calibrado grosso modo para que un nivel 90 maneje un auto de velocidad 330, un nivel 80 
+        // velocidad 295, etc.)
+
+        if(this.habilidad >= 60 && (this.habilidad/auto.velocidadMaxima) >= 0.27 && auto.conductor == null){
+            return true
+        }
+
+        return false
     }
 
     /**
@@ -121,9 +132,9 @@ class Piloto {
             throw new Error("El auto ya está ocupado");
         }
 
-        /*if(!this.puedeConducirAuto(auto)){
+        if(!this.puedeConducirAuto(auto)){
             throw new Error("El auto y el piloto no son compatibles");
-        }*/
+        }
 
         this.auto = auto;
         this.autosConducidos.push(auto);
@@ -227,7 +238,64 @@ class Piloto {
      * // }
      */
     adaptarEstiloConduccion(condiciones) {
-        // Implementar lógica para adaptar estilo de conducción PREGUNTAR A EZE CÓMO CALCULAR
+        // Implementar lógica para adaptar estilo de conducción 
+
+        //Lógica implementada: Se consideran tres casos de modificación:
+
+        //Caso medio: Los condiciones son medianamente desfavorables, se reduce ligeramente 
+        //la agresividad y aumenta la consistencia.
+
+        //Caso extremo: Los condiciones son altamente desfavorables, se reduce drásticamente
+        //la agresividad y aumenta la consistencia.
+
+        //Caso ideal: Los condiciones son favorables, se aumenta ligeramente 
+        //la agresividad y reduce ligeramente la consistencia.
+
+        const estiloActual = this.estilo;
+        const ajusteAgresividad = "0";
+        const ajusteConsistencia = "0";
+
+        //Caso medio
+        if((condiciones.clima).toLowerCase() == "mojado" 
+           || (condiciones.visibilidad).tolowerCase() == "media" 
+           || (condiciones.estadoPista).tolowerCase() == "humeda"){
+            this.estilo == "conservador";
+            this.agresividad -= 10;
+            ajusteAgresividad = "-10";
+            this.consistencia += 10;
+            ajusteConsistencia = "+10";
+        }
+
+        //Caso extremo
+        if((condiciones.clima).toLowerCase() == "lluvia" 
+           || (condiciones.visibilidad).tolowerCase() == "baja" 
+           || (condiciones.estadoPista).tolowerCase() == "mojada"){
+            this.estilo == "conservador";
+            this.agresividad -= 20;
+            ajusteAgresividad = "-20";
+            this.consistencia += 15;
+            ajusteConsistencia = "+15";
+        }
+
+        //Caso ideal
+        if((condiciones.clima).toLowerCase() == "seco" 
+           && (condiciones.visibilidad).tolowerCase() == "alta" 
+           && (condiciones.estadoPista).tolowerCase() == "seca"){
+            this.estilo == "agresivo";
+            this.agresividad += 20;
+            ajusteAgresividad = "+20";
+            this.consistencia -= 10;
+            ajusteConsistencia = "-10";
+        }
+
+        return{
+            estiloAnterior: estiloActual,
+            estiloNuevo: this.estilo,
+            ajustes:{
+                agresividad: ajusteAgresividad,
+                consistencia: ajusteConsistencia
+            }
+        }
     }
 
     /**
