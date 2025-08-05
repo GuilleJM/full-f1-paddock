@@ -9,7 +9,7 @@ class Auto {
         this.estado = 'en_carrera'; // en_carrera, en_boxes, reserva, desarrollo
         this.conductor = null;
         this.tiempoVuelta = 0;
-        this.tiempoCarrera = 0;
+        this.tiempoCarrera = 0; /* Agregado para facilitar cálculos*/
         this.desgasteNeumaticos = 0;
         this.desgasteMotor = 0;
         this.kmRecorridos = 0;
