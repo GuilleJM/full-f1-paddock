@@ -3,6 +3,7 @@ class Escuderia {
         this.nombre = nombre;
         this.paisOrigen = paisOrigen;
         this.presupuesto = presupuesto;
+        this.presupuestoInvertido = 0;
         this.autos = [];
         this.pilotos = [];
         this.desarrollo = {
@@ -38,7 +39,43 @@ class Escuderia {
      * // }
      */
     invertirEnDesarrollo(area, monto) {
-        // Implementar lógica para invertir en desarrollo
+        const areasValidas = ['motor', 'aerodinamica', 'neumaticos', 'suspension'];
+        if (!areasValidas.includes(area)) {
+            throw new Error('Área de desarrollo no válida');
+        }
+
+        if (monto > this.presupuesto) {
+            throw new Error('Presupuesto insuficiente');
+        }
+
+        const mejora = this.calcularMejora(area, monto);
+        const nivelAnterior = this.desarrollo[area].nivel;
+        
+        this.desarrollo[area].nivel = mejora.nivelAlcanzado;
+        if (area === 'motor') {
+            this.desarrollo.motor.estadisticas.potencia += mejora.mejoraPotencia;
+            this.desarrollo.motor.estadisticas.eficiencia += mejora.mejoraEficiencia;
+        } else if (area === 'aerodinamica') {
+            this.desarrollo.aerodinamica.estadisticas.carga += mejora.mejoraCarga;
+            this.desarrollo.aerodinamica.estadisticas.resistencia += mejora.mejoraResistencia;
+        } else if (area === 'neumaticos') {
+            this.desarrollo.neumaticos.estadisticas.durabilidad += mejora.mejoraDurabilidad;
+            this.desarrollo.neumaticos.estadisticas.agarre += mejora.mejoraAgarre;
+        } else if (area === 'suspension') {
+            this.desarrollo.suspension.estadisticas.estabilidad += mejora.mejoraEstabilidad;
+            this.desarrollo.suspension.estadisticas.respuesta += mejora.mejoraRespuesta;
+        }
+
+        this.presupuesto -= monto;
+        this.presupuestoInvertido += monto;
+
+        return {
+            area,
+            montoInvertido: monto,
+            presupuestoRestante: this.presupuesto,
+            nivelAnterior,
+            nivelNuevo: mejora.nivelAlcanzado
+        };
     }
 
     /**
@@ -52,13 +89,42 @@ class Escuderia {
      * const mejora = escuderia.calcularMejora("motor", 200000);
      * // Returns: {
      * //   area: "motor",
-     * //   mejoraPotencia: 15,
+     * //   mejoraPotencia: 10,
      * //   mejoraEficiencia: 10,
      * //   nivelAlcanzado: 2
      * // }
      */
     calcularMejora(area, monto) {
-        // Implementar lógica para calcular mejora
+        const costoPorNivel = 100000;
+        const nivelEsperado = Math.floor(monto / costoPorNivel);
+        const nivelAlcanzado = nivelEsperado;
+        const probabilidadDeError = 0.2;
+        
+        if(Math.random() < probabilidadDeError){
+            nivelAlcanzado -= 1;
+        };
+
+        const mejoraBase = nivelAlcanzado * 5;
+
+        const mejora = { area, nivelAlcanzado };
+        
+        if (area === 'motor') {
+            mejora.mejoraPotencia = mejoraBase;
+            mejora.mejoraEficiencia = mejoraBase;
+        } else if (area === 'aerodinamica') {
+            mejora.mejoraCarga = mejoraBase;
+            mejora.mejoraResistencia = mejoraBase;
+        } else if (area === 'neumaticos') {
+            mejora.mejoraDurabilidad = mejoraBase;
+            mejora.mejoraAgarre = mejoraBase;
+        } else if (area === 'suspension') {
+            mejora.mejoraEstabilidad = mejoraBase;
+            mejora.mejoraRespuesta = mejoraBase;
+        }
+
+        this.esDesarrolloExitoso(nivelEsperado, nivelAlcanzado);
+
+        return mejora;
     }
 
     /**
@@ -72,8 +138,12 @@ class Escuderia {
      * const esExitoso = escuderia.esDesarrolloExitoso("motor");
      * // Returns: true si el nivel de desarrollo es adecuado y el presupuesto fue bien utilizado
      */
-    esDesarrolloExitoso(area) {
-        // Implementar lógica para validar desarrollo exitoso
+    esDesarrolloExitoso(nivelEsperado, nivelAlcanzado) {
+
+        //Lógica implementada: Se considera que el desarrollo fue exitoso
+        //si el nivel alcanzado es igual al nivel esperado
+        //(Es decir, si no hubieron errores aleatorios)
+        return nivelEsperado == nivelAlcanzado
     }
 
     /**
@@ -104,7 +174,20 @@ class Escuderia {
      * // }
      */
     obtenerEstadisticas() {
-        // Implementar lógica para obtener estadísticas
+        return {
+            desarrollo: {
+                motor: { ...this.desarrollo.motor },
+                aerodinamica: { ...this.desarrollo.aerodinamica },
+                neumaticos: { ...this.desarrollo.neumaticos },
+                suspension: { ...this.desarrollo.suspension }
+            },
+            rendimiento: { ...this.estadisticas },
+            presupuesto: {
+                total: this.presupuesto + this.presupuestoInvertido,
+                disponible: this.presupuesto,
+                invertido: this.presupuestoInvertido
+            }
+        };
     }
 
     /**
@@ -129,7 +212,28 @@ class Escuderia {
      * // }
      */
     actualizarEstadisticas(tipo, cantidad) {
-        // Implementar lógica para actualizar estadísticas
+        const tiposValidos = ['victoria', 'podio', 'vueltaRapida', 'abandono'];
+        if (!tiposValidos.includes(tipo)) {
+            throw new Error('Tipo de estadística no válido');
+        }
+
+        const tipoMap = {
+            victoria: 'victorias',
+            podio: 'podios',
+            vueltaRapida: 'vueltasRapidas',
+            abandono: 'abandonos'
+        };
+        
+        const tipoInterno = tipoMap[tipo];
+        const cantidadAnterior = this.estadisticas[tipoInterno];
+        this.estadisticas[tipoInterno] += cantidad;
+
+        return {
+            tipo,
+            cantidadAnterior,
+            cantidadNueva: this.estadisticas[tipoInterno],
+            estadisticasActualizadas: { ...this.estadisticas /*Copia los valores ya existentes de estaditicas en vez de ir uno por uno*/}
+        };
     }
 }
 
