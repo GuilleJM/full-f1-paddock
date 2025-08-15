@@ -182,6 +182,7 @@ class Escuderia {
                 suspension: { ...this.desarrollo.suspension }
             },
             rendimiento: { ...this.estadisticas },
+            puntosCampeonato: (this.estadisticas.victorias * 25 + this.estadisticas.podios * 18 + this.estadisticas.vueltasRapidas),
             presupuesto: {
                 total: this.presupuesto + this.presupuestoInvertido,
                 disponible: this.presupuesto,
