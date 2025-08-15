@@ -1,5 +1,5 @@
 class Circuito {
-    constructor(nombre, ubicacion, longitudKm) {
+    constructor(nombre, ubicacion, longitudKm, tipo) {
         this.nombre = nombre;
         this.ubicacion = ubicacion;
         this.longitudKm = longitudKm;
@@ -12,7 +12,7 @@ class Circuito {
             humedad: 50,
             visibilidad: 'alta'
         };
-        this.tipo = "baja_degradacion"; /*Añadido para facilitar cálculos*/
+        this.tipo = tipo; /*Añadido para facilitar cálculos*/
     }
 
     /**
@@ -136,10 +136,6 @@ class Circuito {
             throw new Error("No se aportaron las características necesarias");
         }
 
-        //Lógica implementada: La visibilidad se calcula en base a la humedad y el clima
-        //por defecto, la visibilidad es alta, si el clima es húmedo y la humedad es mayor a 49
-        // pasa a ser media. Si llueve y la humedad supera los 79 puntos, pasa a ser baja
-        
         const visibilidad = "alta";
 
         if((clima).toLowerCase() == "humedo" && humedad >= 50){
