@@ -204,7 +204,7 @@ class Auto {
 
         let vueltasMaximasNeumaticos = 40;
 
-        if((vuelta.tipoDeCircuito).toLowerCase() == "baja degradación"){
+        if((vuelta.tipoDeCircuito).toLowerCase() == "baja_degradación"){
             vueltasMaximasNeumaticos *= 1.2;
         }else{
             vueltasMaximasNeumaticos *= 0.8;
@@ -300,6 +300,13 @@ class Auto {
             motor: this.desgasteMotor,
             estado: this.estado
         };
+    }
+
+    formatoTiempo(tiempo){  
+        const minutos = Math.floor(tiempo / 60);
+        const segundosRestantes = Math.floor(tiempo % 60);
+        const milisegundos = Math.round((tiempo % 1) * 1000);
+        return `${minutos}:${segundosRestantes.toString().padStart(2, '0')}.${milisegundos.toString().padStart(3, '0')}`;
     }
 }
 
