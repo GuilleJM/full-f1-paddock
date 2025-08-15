@@ -9,6 +9,7 @@ class Piloto {
         this.victorias = 0;
         this.podios = 0;
         this.vueltasRapidas = 0;
+        this.vueltasCompletadas = 0; //Agregado para facilitar calculos
         this.adelantamientos = 0;
         this.errores = 0;
         this.auto = null;
@@ -127,10 +128,6 @@ class Piloto {
      */
     conducirAuto(auto) {
         // Implementar lógica para asignar auto al piloto
-
-        if(auto.conductor != null){
-            throw new Error("El auto ya está ocupado");
-        }
 
         if(!this.puedeConducirAuto(auto)){
             throw new Error("El auto y el piloto no son compatibles");
@@ -444,7 +441,8 @@ class Piloto {
         return {
             general: this.estadisticas,
             habilidades: habilidades,
-            rendimiento: rendimiento
+            rendimiento: rendimiento,
+            puntosCampeonato: (this.estadisticas.victorias * 25 + this.estadisticas.podios * 18 + this.estadisticas.vueltasRapidas),
         }
 
     }
