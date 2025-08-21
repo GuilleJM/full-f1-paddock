@@ -26,9 +26,21 @@ class Estrategia {
      * // Returns: true si la estrategia es óptima para una carrera de 60 vueltas
      */
     esOptima() {
+        var result = false;
+        console.log("\nesOptima: \n Return True if stops <= 4 and stops >= 2 \n and agresividadConsistente is True and paradasDistribuidasUniformemente is True");
+        console.log("   Number of stops: ", this.numeroParadas);
+        console.log("   Conditional 1: ", this.numeroParadas <= 4);
+        console.log("   Conditional 2: ", this.numeroParadas >= 2);
+        console.log("\n   Conditional 3: ");
+        console.log("   Conditional 3: ", this.agresividadConsistente());
+        console.log("\n   Conditional 4: ");
+        console.log("   Conditional 4: ", this.paradasDistribuidasUniformemente());
+        console.log("\n   IGNORE (calls in if): \n");
         if ( this.numeroParadas <= 4 && this.numeroParadas >= 2 &&  this.agresividadConsistente() && this.paradasDistribuidasUniformemente()){
-            return true;}
-        return false;}
+            result = true;};
+        console.log("\n   FINISH IGNORE \n");
+        console.log("   Result esOptima: ", result);
+        return result;}
 
     /**
      * Verifica si las paradas están distribuidas uniformemente
@@ -45,14 +57,40 @@ class Estrategia {
      *   "media"
      * );
      * const distribucion = estrategia.paradasDistribuidasUniformemente();
-     * // Returns: true si los intervalos entre paradas son similares (la diferencia no es mayor a 3 vueltas) 
-     * //               y hay mas de 15 vueltas de diferencia
+
      */
-    paradasDistribuidasUniformemente() {
-        for (let i = 1; i < this.numeroParadas.length; i++) {
-            if (this.vueltasParada[i] % this.vueltasParada[0] > 3 || (this.vueltasParada[i] - this.vueltasParada[i - 1]) > 15 ) {
-                return false;}}
-        return true;}
+paradasDistribuidasUniformemente() {
+    console.log("\nparadasDistribuidasUniformemente: \nReturns False if any conditional is True");
+    console.log("   Number of Stops: ", this.numeroParadas);
+    let result = true;
+
+    let intervalo = this.vueltasParada[0] - 0;
+    console.log("   First interval: ", intervalo);
+    if (intervalo < 15 || intervalo > 25) {
+        result = false;
+        console.log("   First interval out of range (15-25)");
+        return result;
+    }
+
+    let ultimoIntervalo = intervalo;
+    for (let i = 1; i < this.vueltasParada.length; i++) {
+        let intervalo = this.vueltasParada[i] - this.vueltasParada[i - 1];
+        console.log(`   Interval ${i}: ${intervalo}`);
+        if (intervalo < 10 || intervalo > 20) {
+            result = false;
+            console.log(`   Interval ${i} out of range (10-20)`);
+            break;
+        }
+        if (intervalo - ultimoIntervalo > 5 || intervalo - ultimoIntervalo < -5) {
+            result = false;
+            console.log(`   Interval ${i} differs from last interval by more than 5`);
+            break;
+        }
+        ultimoIntervalo = intervalo;
+    }
+    console.log("   Result paradasDistribuidasUniformemente: ", result);
+    return result;
+}
 
     /**
      * Valida si el nivel de agresividad es consistente
@@ -72,16 +110,23 @@ class Estrategia {
      * // Returns: true si la agresividad es consistente con la estrategia
      */
     agresividadConsistente() {
+        console.log("\nagresividadConsistente: ");
+        console.log ("Returns False if aggressiveness is High but tires arent 'hard'");
+        console.log("Returns False if aggressiveness is Low but tires arent Soft ");
+        console.log("   Current aggressiveness: ", this.agresividad);
+        console.log("   Current tires: ", this.tiposNeumaticos[this.paradasRealizadas])
+        var result = true
         if (this.agresividad == "Alta"){
             if (this.tiposNeumaticos[this.paradasRealizadas] != "duros"){
-                return false}}
+                result = false;}}
         // if (this.agresividad == "Media"){
         //     if (this.tiposNeumaticos[this.paradasRealizadas] != "medios"){
         //         return false}}
-        if (this.agresividad == "Baja"){
+        else if (this.agresividad == "Baja"){
             if (this.tiposNeumaticos[this.paradasRealizadas] != "blandos"){
-                return false}}
-            
+                result = false;}}
+        console.log("   Result agresividadConsistente: ", result)
+        return result;
             }
 
     /**
@@ -106,13 +151,23 @@ class Estrategia {
      * // }
      */
     registrarParada(tiempo) {
+        console.log("\nregistrarParada: \n Modifies paradasRealizadas and tiempoTotalPitStops \n Returns the new values")
+        console.log("   Time: ", time);
         this.paradasRealizadas = this.paradasRealizadas + 1;
+        this.tiempoTotalPitStops = this.tiempoTotalPitStops + tiempo
+        console.log("   Result registrarParada: ");
+        console.log({
+            numeroParada: this.paradasRealizadas,
+            tiempo: tiempo,
+            vuelta: this.vueltasParada[this.paradasRealizadas],
+            neumaticos: this.tiposNeumaticos[this.paradasRealizadas],
+            tiempoTotalPitStops: this.tiempoTotalPitStops})
         return({
             numeroParada: this.paradasRealizadas,
             tiempo: tiempo,
             vuelta: this.vueltasParada[this.paradasRealizadas],
             neumaticos: this.tiposNeumaticos[this.paradasRealizadas],
-            tiempoTotalPitStops: this.tiempoTotalPitStops + tiempo})}
+            tiempoTotalPitStops: this.tiempoTotalPitStops})}
 
     /**
      * Obtiene información sobre la próxima parada programada
@@ -134,6 +189,13 @@ class Estrategia {
      * // }
      */
     obtenerSiguienteParada() {
+        console.log("\nobtenerSiguienteParada: \n Returns values for the next stop")
+        console.log("   Result obtenerSiguienteParada: ")
+        console.log({
+            vuelta: this.vueltasParada[this.paradasRealizadas],
+            neumaticos: this.tiposNeumaticos[this.paradasRealizadas + 1],
+            tiempoEstimado: 2.5,
+            numeroParada: this.paradasRealizadas + 1});
         return({
             vuelta: this.vueltasParada[this.paradasRealizadas],
             neumaticos: this.tiposNeumaticos[this.paradasRealizadas + 1],
