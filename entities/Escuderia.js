@@ -96,9 +96,16 @@ class Escuderia {
      */
     calcularMejora(area, monto) {
         const costoPorNivel = 100000;
+        const nivelEsperado = Math.floor(monto / costoPorNivel);
+        const nivelAlcanzado = nivelEsperado;
+        const probabilidadDeError = 0.2;
+        
+        if(Math.random() < probabilidadDeError){
+            nivelAlcanzado -= 1;
+        };
+
         const nivelAlcanzado = Math.floor(monto / costoPorNivel);
         const mejoraBase = nivelAlcanzado * 5;
-
         const mejora = { area, nivelAlcanzado };
         
         if (area === 'motor') {
@@ -115,6 +122,8 @@ class Escuderia {
             mejora.mejoraRespuesta = mejoraBase;
         }
 
+        this.esDesarrolloExitoso(nivelEsperado, nivelAlcanzado); //¿Debería ser un console log esta línea (a revisar en el futuro)?
+
         return mejora;
     }
 
@@ -129,32 +138,11 @@ class Escuderia {
      * const esExitoso = escuderia.esDesarrolloExitoso("motor");
      * // Returns: true si el nivel de desarrollo es adecuado y el presupuesto fue bien utilizado
      */
-    esDesarrolloExitoso(area) {
-        const areasValidas = ['motor', 'aerodinamica', 'neumaticos', 'suspension'];
-        if (!areasValidas.includes(area)) {
-            return false;
-        }
-
-        const nivel = this.desarrollo[area].nivel;
-        const estadisticas = this.desarrollo[area].estadisticas;
-        const umbralCombinado = 20; // Suma mínima de ambas propiedades
-
-        let estadistica1, estadistica2;
-        if (area === 'motor') {
-            estadistica1 = estadisticas.potencia;
-            estadistica2 = estadisticas.eficiencia;
-        } else if (area === 'aerodinamica') {
-            estadistica1 = estadisticas.carga;
-            estadistica2 = estadisticas.resistencia;
-        } else if (area === 'neumaticos') {
-            estadistica1 = estadisticas.durabilidad;
-            estadistica2 = estadisticas.agarre;
-        } else if (area === 'suspension') {
-            estadistica1 = estadisticas.estabilidad;
-            estadistica2 = estadisticas.respuesta;
-        }
-
-        return (estadistica1 + estadistica2) >= umbralCombinado;
+    esDesarrolloExitoso(nivelEsperado, nivelAlcanzado) {
+        //Lógica implementada: Se considera que el desarrollo fue exitoso
+        //si el nivel alcanzado es igual al nivel esperado
+        //(Es decir, si no hubieron errores aleatorios)
+        return nivelEsperado == nivelAlcanzado
     }
 
     /**
@@ -193,6 +181,7 @@ class Escuderia {
                 suspension: { ...this.desarrollo.suspension }
             },
             rendimiento: { ...this.estadisticas },
+            puntosCampeonato: (this.estadisticas.victorias * 25 + this.estadisticas.podios * 18 + this.estadisticas.vueltasRapidas),
             presupuesto: {
                 total: this.presupuesto + this.presupuestoInvertido,
                 disponible: this.presupuesto,
