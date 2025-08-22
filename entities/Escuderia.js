@@ -104,8 +104,8 @@ class Escuderia {
             nivelAlcanzado -= 1;
         };
 
+        const nivelAlcanzado = Math.floor(monto / costoPorNivel);
         const mejoraBase = nivelAlcanzado * 5;
-
         const mejora = { area, nivelAlcanzado };
         
         if (area === 'motor') {
@@ -122,7 +122,7 @@ class Escuderia {
             mejora.mejoraRespuesta = mejoraBase;
         }
 
-        this.esDesarrolloExitoso(nivelEsperado, nivelAlcanzado);
+        this.esDesarrolloExitoso(nivelEsperado, nivelAlcanzado); //¿Debería ser un console log esta línea (a revisar en el futuro)?
 
         return mejora;
     }
@@ -139,7 +139,6 @@ class Escuderia {
      * // Returns: true si el nivel de desarrollo es adecuado y el presupuesto fue bien utilizado
      */
     esDesarrolloExitoso(nivelEsperado, nivelAlcanzado) {
-
         //Lógica implementada: Se considera que el desarrollo fue exitoso
         //si el nivel alcanzado es igual al nivel esperado
         //(Es decir, si no hubieron errores aleatorios)

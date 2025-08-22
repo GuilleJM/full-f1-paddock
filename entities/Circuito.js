@@ -79,6 +79,7 @@ class Circuito {
             dificultad,
             numeroCurva: this.curvas.length + 1
         };
+
         this.curvas.push(curva);
         return curva;
     }
@@ -109,6 +110,7 @@ class Circuito {
             longitud,
             numeroZona: this.zonasDRS.length + 1
         };
+
         this.zonasDRS.push(zonaDRS);
         return zonaDRS;
     }
@@ -147,6 +149,7 @@ class Circuito {
         }
 
         this.condicionesClimaticas = { clima, temperatura, humedad, visibilidad };
+
         return this.condicionesClimaticas;
     }
 
