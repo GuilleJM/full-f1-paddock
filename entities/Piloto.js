@@ -130,7 +130,7 @@ class Piloto {
         // Implementar lógica para asignar auto al piloto
 
         if(!this.puedeConducirAuto(auto)){
-            throw new Error("El auto y el piloto no son compatibles");
+            throw new Error('El auto y el piloto no son compatibles');
         }
 
         this.auto = auto;

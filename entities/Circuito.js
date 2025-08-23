@@ -138,7 +138,7 @@ class Circuito {
             throw new Error("No se aportaron las características necesarias");
         }
 
-        const visibilidad = "alta";
+        var visibilidad = "alta";
 
         if((clima).toLowerCase() == "humedo" && humedad >= 50){
             visibilidad = "media";
