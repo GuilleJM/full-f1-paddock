@@ -1,5 +1,5 @@
 class Circuito {
-    constructor(nombre, ubicacion, longitudKm) {
+    constructor(nombre, ubicacion, longitudKm, tipo) {
         this.nombre = nombre;
         this.ubicacion = ubicacion;
         this.longitudKm = longitudKm;
@@ -9,8 +9,10 @@ class Circuito {
         this.condicionesClimaticas = {
             clima: 'seco',
             temperatura: 25,
-            humedad: 50
+            humedad: 50,
+            visibilidad: 'alta'
         };
+        this.tipo = tipo; /*Añadido para facilitar cálculos*/
     }
 
     /**
@@ -66,12 +68,18 @@ class Circuito {
      * // }
      */
     agregarCurva(nombre, velocidadMaxima, dificultad) {
+
+        if(nombre == null || velocidadMaxima == null || dificultad == null){
+            throw new Error("No se aportaron las características necesarias");
+        }
+
         const curva = {
             nombre,
             velocidadMaxima,
             dificultad,
             numeroCurva: this.curvas.length + 1
         };
+
         this.curvas.push(curva);
         return curva;
     }
@@ -92,11 +100,17 @@ class Circuito {
      * // }
      */
     agregarZonaDRS(nombre, longitud) {
+
+        if(nombre == null || longitud == null){
+            throw new Error("No se aportaron las características necesarias");
+        }
+
         const zonaDRS = {
             nombre,
             longitud,
             numeroZona: this.zonasDRS.length + 1
         };
+
         this.zonasDRS.push(zonaDRS);
         return zonaDRS;
     }
@@ -119,7 +133,23 @@ class Circuito {
      * // }
      */
     establecerCondicionesClimaticas(clima, temperatura, humedad) {
-        this.condicionesClimaticas = { clima, temperatura, humedad };
+
+        if(clima == null || temperatura == null || humedad == null){
+            throw new Error("No se aportaron las características necesarias");
+        }
+
+        const visibilidad = "alta";
+
+        if((clima).toLowerCase() == "humedo" && humedad >= 50){
+            visibilidad = "media";
+        }
+
+        if((clima).toLowerCase() == "lluvia" && humedad >= 80){
+            visibilidad = "baja";
+        }
+
+        this.condicionesClimaticas = { clima, temperatura, humedad, visibilidad };
+
         return this.condicionesClimaticas;
     }
 
