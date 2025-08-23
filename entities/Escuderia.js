@@ -97,14 +97,13 @@ class Escuderia {
     calcularMejora(area, monto) {
         const costoPorNivel = 100000;
         const nivelEsperado = Math.floor(monto / costoPorNivel);
-        const nivelAlcanzado = nivelEsperado;
+        var nivelAlcanzado = nivelEsperado;
         const probabilidadDeError = 0.2;
         
         if(Math.random() < probabilidadDeError){
             nivelAlcanzado -= 1;
         };
 
-        const nivelAlcanzado = Math.floor(monto / costoPorNivel);
         const mejoraBase = nivelAlcanzado * 5;
         const mejora = { area, nivelAlcanzado };
         
