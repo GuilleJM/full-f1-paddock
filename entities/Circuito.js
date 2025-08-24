@@ -43,7 +43,7 @@ class Circuito {
         }, 0) / numCurvas;
 
         return (
-            numCurvas > 10 &&
+            numCurvas > 2 &&
             numZonasDRS >= 2 &&
             this.longitudKm > 5 &&
             dificultadPromedio > 2
@@ -138,7 +138,7 @@ class Circuito {
             throw new Error("No se aportaron las características necesarias");
         }
 
-        const visibilidad = "alta";
+        var visibilidad = "alta";
 
         if((clima).toLowerCase() == "humedo" && humedad >= 50){
             visibilidad = "media";
