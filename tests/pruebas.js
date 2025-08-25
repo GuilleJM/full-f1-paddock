@@ -1,9 +1,9 @@
-const Auto = require('./entities/Auto');
-const Escuderia = require('./entities/Escuderia');
-const Circuito = require('./entities/Circuito');
-const Piloto = require('./entities/Piloto');
-const Carrera = require('./entities/Carrera');
-const Estrategia = require('./entities/Estrategia');
+const Auto = require('../entities/Auto');
+const Escuderia = require('../entities/Escuderia');
+const Circuito = require('../entities/Circuito');
+const Piloto = require('../entities/Piloto');
+const Carrera = require('../entities/Carrera');
+const Estrategia = require('../entities/Estrategia');
 
 // Sección de pruebas para Auto
 console.log('\n=== Pruebas para Auto ===');
