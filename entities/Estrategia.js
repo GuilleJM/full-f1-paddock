@@ -1,11 +1,10 @@
 class Estrategia {
-    constructor(numeroParadas, tiposNeumaticos, vueltasParada, agresividad) {
-        this.numeroParadas = numeroParadas;
-        this.tiposNeumaticos = tiposNeumaticos;
-        this.vueltasParada = vueltasParada;
-        this.agresividad = agresividad;
-        this.paradasRealizadas = 0;
-        this.tiempoTotalPitStops = 0;
+    constructor(nivel, vueltas, neumaticos) {
+        this.nivel = nivel; // "alta" o "baja"
+        this.vueltas = vueltas; // Array de vueltas para paradas
+        this.neumaticos = neumaticos; // Array de neumáticos para cada parada
+        this.paradasRealizadas = 0; // Contador de paradas registradas
+        this.totalAcumulado = 0; // Tiempo acumulado de paradas
     }
 
     /**
@@ -17,19 +16,25 @@ class Estrategia {
      * 
      * @example
      * const estrategia = new Estrategia(
-     *   2, // número de paradas
-     *   ["blandos", "duros", "duros"], // tipos de neumáticos
+     *   "media", // agresividad
      *   [20, 40], // vueltas de parada
-     *   "media" // agresividad
+     *   ["blandos", "duros"], // tipos de neumáticos
      * );
      * const esOptima = estrategia.esOptima();
      * // Returns: true si la estrategia es óptima para una carrera de 60 vueltas
      */
     esOptima() {
-        var result = false;
-        if ( this.numeroParadas <= 4 && this.numeroParadas >= 2 &&  this.agresividadConsistente() && this.paradasDistribuidasUniformemente()){
-            result = true;};
-        return result;}
+        let result = false;
+
+        // Verificar número de paradas (2 a 4) y rango de vueltas ([10, 80])
+        if (this.vueltas.length <= 4 && this.vueltas.length >= 2 && 
+            this.vueltas.every(vuelta => vuelta >= 10 && vuelta <= 80) && 
+            this.agresividadConsistente() && this.paradasDistribuidasUniformemente()) {
+            result = true;
+        }
+
+        return result;
+    }
 
     /**
      * Verifica si las paradas están distribuidas uniformemente
@@ -40,38 +45,39 @@ class Estrategia {
      * 
      * @example
      * const estrategia = new Estrategia(
-     *   2,
-     *   ["blandos", "duros", "duros"],
+     *   "media",
      *   [20, 40],
-     *   "media"
+     *   ["blandos", "duros"]
      * );
      * const distribucion = estrategia.paradasDistribuidasUniformemente();
-
      */
-paradasDistribuidasUniformemente() {
-    let result = true;
+    paradasDistribuidasUniformemente() {
+        let result = true;
 
-    let intervalo = this.vueltasParada[0] - 0;
-    if (intervalo < 15 || intervalo > 25) {
-        result = false;
+        // Verificar que la primera parada esté en [10, 80]
+        let intervalo = this.vueltas[0];
+        if (intervalo < 10 || intervalo > 80) {
+            result = false;
+            return result;
+        }
+
+        let ultimoIntervalo = intervalo;
+        for (let i = 1; i < this.vueltas.length; i++) {
+            let intervalo = this.vueltas[i] - this.vueltas[i - 1];
+            // Intervalos entre [10, 30]
+            if (intervalo < 10 || intervalo > 30) {
+                result = false;
+                break;
+            }
+            // Diferencia entre intervalos no mayor a 5
+            if (i > 1 && Math.abs(intervalo - ultimoIntervalo) > 5) {
+                result = false;
+                break;
+            }
+            ultimoIntervalo = intervalo;
+        }
         return result;
     }
-
-    let ultimoIntervalo = intervalo;
-    for (let i = 1; i < this.vueltasParada.length; i++) {
-        let intervalo = this.vueltasParada[i] - this.vueltasParada[i - 1];
-        if (intervalo < 10 || intervalo > 20) {
-            result = false;
-            break;
-        }
-        if (intervalo - ultimoIntervalo > 5 || intervalo - ultimoIntervalo < -5) {
-            result = false;
-            break;
-        }
-        ultimoIntervalo = intervalo;
-    }
-    return result;
-}
 
     /**
      * Valida si el nivel de agresividad es consistente
@@ -82,30 +88,25 @@ paradasDistribuidasUniformemente() {
      * 
      * @example
      * const estrategia = new Estrategia(
-     *   2,
-     *   ["blandos", "duros", "duros"],
+     *   "media",
      *   [20, 40],
-     *   "media"
+     *   ["blandos", "duros"]
      * );
      * const agresividad = estrategia.agresividadConsistente();
      * // Returns: true si la agresividad es consistente con la estrategia
      */
     agresividadConsistente() {
-        var result = true
-        if (this.agresividad == "Alta"){
-            if (this.tiposNeumaticos[this.paradasRealizadas] != "duros"){
-                result = false;
-            }}
-        /*if (this.agresividad == "Media"){
-            if (this.tiposNeumaticos[this.paradasRealizadas] != "medios"){
-                return false
-            }}*/
-        else if (this.agresividad == "Baja"){
-            if (this.tiposNeumaticos[this.paradasRealizadas] != "blandos"){
-                result = false;
-            }}
+        let result = true;
+
+        // Definir neumáticos válidos según nivel
+        const neumaticosValidos = this.nivel === "alta" ? ["duros", "medios"] : ["blandos"];
+        // Verificar que todos los neumáticos sean válidos
+        if (!this.neumaticos.every(neumatico => neumaticosValidos.includes(neumatico))) {
+            result = false;
+        }
+
         return result;
-            }
+    }
 
     /**
      * Registra una parada en boxes con su tiempo
@@ -114,29 +115,31 @@ paradasDistribuidasUniformemente() {
      * 
      * @example
      * const estrategia = new Estrategia(
-     *   2,
-     *   ["blandos", "duros", "duros"],
+     *   "media",
      *   [20, 40],
-     *   "media"
+     *   ["blandos", "duros"]
      * );
      * const parada = estrategia.registrarParada(2.5);
      * // Returns: {
-     * //   numeroParada: 1,
+     * //   parada: 1,
      * //   tiempo: 2.5,
      * //   vuelta: 20,
-     * //   neumaticos: "duros",
-     * //   tiempoTotalPitStops: 2.5
+     * //   neumaticos: "blandos",
+     * //   totalAcumulado: 2.5
      * // }
      */
     registrarParada(tiempo) {
         this.paradasRealizadas = this.paradasRealizadas + 1;
-        this.tiempoTotalPitStops = this.tiempoTotalPitStops + tiempo
-        return({
-            numeroParada: this.paradasRealizadas,
+        this.totalAcumulado = this.totalAcumulado + tiempo;
+
+        return {
+            parada: this.paradasRealizadas,
             tiempo: tiempo,
-            vuelta: this.vueltasParada[this.paradasRealizadas],
-            neumaticos: this.tiposNeumaticos[this.paradasRealizadas],
-            tiempoTotalPitStops: this.tiempoTotalPitStops})}
+            vuelta: this.vueltas[this.paradasRealizadas - 1],
+            neumaticos: this.neumaticos[this.paradasRealizadas - 1],
+            totalAcumulado: this.totalAcumulado
+        };
+    }
 
     /**
      * Obtiene información sobre la próxima parada programada
@@ -144,24 +147,26 @@ paradasDistribuidasUniformemente() {
      * 
      * @example
      * const estrategia = new Estrategia(
-     *   2,
-     *   ["blandos", "duros", "duros"],
+     *   "media",
      *   [20, 40],
-     *   "media"
+     *   ["blandos", "duros"]
      * );
      * const siguienteParada = estrategia.obtenerSiguienteParada();
      * // Returns: {
      * //   vuelta: 20,
-     * //   neumaticos: "duros",
-     * //   tiempoEstimado: 2.5,
-     * //   paradaNumero: 1
+     * //   neumaticos: "blandos",
+     * //   tiempoEstimado: 3,
+     * //   numeroParada: 1
      * // }
      */
     obtenerSiguienteParada() {
-        return({
-            vuelta: this.vueltasParada[this.paradasRealizadas],
-            neumaticos: this.tiposNeumaticos[this.paradasRealizadas + 1],
-            tiempoEstimado: 2.5,
-            numeroParada: this.paradasRealizadas + 1})}}
+        return {
+            vuelta: this.vueltas[this.paradasRealizadas],
+            neumaticos: this.neumaticos[this.paradasRealizadas],
+            tiempoEstimado: 3,
+            numeroParada: this.paradasRealizadas + 1
+        };
+    }
+}
 
-module.exports = Estrategia; 
+module.exports = Estrategia;

@@ -34,7 +34,7 @@ class Carrera {
      * // }
      */
     iniciarCarrera() {
-        // Implementar lógica para iniciar la carrera
+
         if(!this.esValida()){
             throw new Error('No están dadas las condiciones mínimas para iniciar la carrera');
         }
@@ -76,11 +76,11 @@ class Carrera {
      * // Returns: true
      */
     esValida() {
-        // Implementar lógica para validar la carrera
+
         const autosSuficientes = (this.autosParticipantes.length >= 10);
         const circuitoValido = this.circuito.nombre != null;  //No hay método circuitoValido
         const condicionesEstablecidas = this.condicionesClimaticas != null;
-        const fechaValida = this.fecha.getDay() == 0;
+        const fechaValida = !isNaN(this.fecha);
 
         return autosSuficientes && circuitoValido && condicionesEstablecidas && fechaValida
     }
@@ -95,7 +95,6 @@ class Carrera {
      * // Returns: 78 (para Mónaco)
      */
     calcularNumeroVueltas() {
-        // Implementar lógica para calcular el número de vueltas
 
         let velocidadesPromedio = [];
         velocidadesPromedio = this.autosParticipantes.map((auto) => auto.velocidadMaxima * 0.8);
@@ -134,7 +133,6 @@ class Carrera {
      * // }
      */
     realizarClasificacion() {
-        // Implementar lógica para realizar la clasificación
 
         this.autosParticipantes.forEach((auto) => this.registrarVuelta(auto));
         const grillaOrdenadaq1 = this.autosParticipantes.sort((a,b) => a.tiempoVuelta - b.tiempoVuelta);
@@ -171,9 +169,9 @@ class Carrera {
         });
 
         return{
-            q1: this.q1,
-            q2: this.q2,
-            q3: this.q3,
+            q1: this.clasificacion.q1,
+            q2: this.clasificacion.q2,
+            q3: this.clasificacion.q3,
             posiciones: this.posicionesDeSalida
         }
     }
@@ -195,10 +193,11 @@ class Carrera {
      * // }
      */
     registrarVuelta(auto) {
-        // Implementar lógica para registrar una vuelta
 
         const tiempoBase = (this.circuito.longitudKm/auto.velocidadMaxima) * 3600;
+        this.circuito.actualizarRecordVuelta(auto.tiempoVuelta, auto.conductor);
 
+        //No anda el factor piloto porque probablemente no accede a los objetos: a revisar
         const factorPiloto = 1 - ((auto.conductor.habilidades.velocidad + auto.conductor.habilidades.consistencia)/200) * 0.1;
 
         let factorNeumaticos = 1.00;
@@ -237,7 +236,7 @@ class Carrera {
     }
 
     registrarVueltaDeCarrera(auto) {
-        // Implementar lógica para registrar una vuelta
+
         const tiempoVuelta = this.registrarVuelta(auto);
         let esVueltaRapida = false;
 
@@ -280,7 +279,6 @@ class Carrera {
      * // }
      */
     finalizarCarrera() {
-        // Implementar lógica para finalizar la carrera
 
         const posicionesFinales= this.autosParticipantes.sort((a,b) => a.tiempoCarrera - b.tiempoCarrera);
 
@@ -309,15 +307,14 @@ class Carrera {
             auto.conductor.adelantamientos += Math.max(0, posicionInicial - posicionFinal);
         });
 
-        return{
-            podio: [ganador, podio],
+        return {
+            podio: [ganador, ...podio],
             vueltaRapida: this.vueltaRapida,
             puntos: [{piloto: ganador.piloto, puntos: 25},
                      {piloto: podio[0].piloto, puntos: 18},
                      {piloto: podio[1].piloto, puntos: 15},
             ]
         }
-
     }
 
     /**
@@ -339,14 +336,13 @@ class Carrera {
      * // }
      */
     obtenerResultados() {
-        // Implementar lógica para obtener resultados
 
         const vueltasRestantes = this.numeroVueltas - this.vueltaActual;
 
         if(vueltasRestantes > 0){
             this.estado = "en_progreso";
         }else{
-            this.estado = "finalizada;"
+            this.estado = "finalizada";
         }
 
         const posiciones = this.autosParticipantes
@@ -379,6 +375,7 @@ class Carrera {
         const minutos = Math.floor(tiempo / 60);
         const segundosRestantes = Math.floor(tiempo % 60);
         const milisegundos = Math.round((tiempo % 1) * 1000);
+        
         return `${minutos}:${segundosRestantes.toString().padStart(2, '0')}.${milisegundos.toString().padStart(3, '0')}`;
     }
 }

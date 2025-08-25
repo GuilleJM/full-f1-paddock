@@ -34,6 +34,7 @@ class Circuito {
      * // Returns: true
      */
     esDesafiante() {
+
         const numCurvas = this.curvas.length;
         const numZonasDRS = this.zonasDRS.length;
         const dificultadPromedio = this.curvas.reduce((acc, curva) => {
@@ -138,7 +139,7 @@ class Circuito {
             throw new Error("No se aportaron las características necesarias");
         }
 
-        var visibilidad = "alta";
+        let visibilidad = "alta";
 
         if((clima).toLowerCase() == "humedo" && humedad >= 50){
             visibilidad = "media";
@@ -170,10 +171,12 @@ class Circuito {
      * // }
      */
     actualizarRecordVuelta(tiempo, piloto) {
+
         const esNuevoRecord = !this.recordVuelta || tiempo < this.recordVuelta.tiempo;
         if (esNuevoRecord) {
             this.recordVuelta = { tiempo, piloto, fecha: new Date().toISOString().split('T')[0] };
         }
+
         return {
             ...this.recordVuelta,
             esNuevoRecord
@@ -204,6 +207,7 @@ class Circuito {
      * // }
      */
     obtenerEstadisticasCircuito() {
+
         const dificultadPromedio = this.curvas.length > 0
             ? this.curvas.reduce((acc, curva) => {
                 if (curva.dificultad === 'alta') return acc + 3;
@@ -211,6 +215,7 @@ class Circuito {
                 return acc + 1;
               }, 0) / this.curvas.length
             : 0;
+        
         return {
             numeroCurvas: this.curvas.length,
             zonasDRS: this.zonasDRS.length,

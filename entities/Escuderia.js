@@ -39,7 +39,9 @@ class Escuderia {
      * // }
      */
     invertirEnDesarrollo(area, monto) {
+
         const areasValidas = ['motor', 'aerodinamica', 'neumaticos', 'suspension'];
+
         if (!areasValidas.includes(area)) {
             throw new Error('Área de desarrollo no válida');
         }
@@ -95,9 +97,10 @@ class Escuderia {
      * // }
      */
     calcularMejora(area, monto) {
+
         const costoPorNivel = 100000;
         const nivelEsperado = Math.floor(monto / costoPorNivel);
-        var nivelAlcanzado = nivelEsperado;
+        let nivelAlcanzado = nivelEsperado;
         const probabilidadDeError = 0.2;
         
         if(Math.random() < probabilidadDeError){
@@ -211,7 +214,9 @@ class Escuderia {
      * // }
      */
     actualizarEstadisticas(tipo, cantidad) {
+
         const tiposValidos = ['victoria', 'podio', 'vueltaRapida', 'abandono'];
+
         if (!tiposValidos.includes(tipo)) {
             throw new Error('Tipo de estadística no válido');
         }

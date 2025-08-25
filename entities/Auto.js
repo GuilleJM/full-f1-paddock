@@ -36,12 +36,11 @@ class Auto {
      */
     configurarDesgasteInicial(configuracion) {
 
-        const valoresDeConfiguracion = Object.values(configuracion);
-        
         if (!configuracion) {
             throw new Error('No se proporcionó configuración de desgaste inicial');
         }
 
+        const valoresDeConfiguracion = Object.values(configuracion);
 
         const valorInvalido = valoresDeConfiguracion.some((parametro) => parametro < 0 || parametro > 100)
         
@@ -76,9 +75,11 @@ class Auto {
      */
     estaEnCondicionesOptimas() {
         let tienePilotoEnCarrera = true;
+
         if((this.estado).toLowerCase() == 'en_carrera' && (this.conductor == undefined || this.conductor == null)){
             tienePilotoEnCarrera = false;
         }
+
         return (
             this.desgasteNeumaticos < 30 &&
             this.combustible > 20 &&
@@ -99,8 +100,12 @@ class Auto {
      * // Returns: { tipoAnterior: "blandos", tipoNuevo: "duros", desgasteReseteado: true }
      */
     cambiarNeumaticos(tipoNeumaticos) {
+
         const tiposValidos = ['blandos', 'medios', 'duros'];
-        if (!tiposValidos.includes(tipoNeumaticos.toLowerCase())) {
+
+        tipoNeumaticos = (tipoNeumaticos).toLowerCase();
+
+        if (!tiposValidos.includes(tipoNeumaticos)) {
             throw new Error('El tipo de neumáticos no es válido');
         }
 
@@ -127,6 +132,7 @@ class Auto {
      * // Returns: { combustibleAnterior: 50, combustibleNuevo: 80 }
      */
     repostarCombustible(cantidad) {
+
         if (cantidad < 0 || cantidad > 100) {
             throw new Error('La cantidad a repostar debe ser un valor entre 0 y 100');
         }
@@ -254,19 +260,20 @@ class Auto {
      * // }
      */
     realizarPitStop({tipoNeumaticos, combustible}) {
+
         const operaciones = [];
         let tiempoTotal = 1.0
 
         if (tipoNeumaticos !== null && tipoNeumaticos !== undefined) {
             this.cambiarNeumaticos(tipoNeumaticos);
             operaciones.push("cambio_neumaticos");
-            tiempoTotal += 2.5;
+            tiempoTotal += 2.1;
         }
 
         if (combustible !== null && combustible !== undefined) {
             this.repostarCombustible(combustible);
             operaciones.push("repostaje");
-            tiempoTotal += 1.8;
+            tiempoTotal += 1.2;
         }
 
         this.estado = "en_boxes";
@@ -306,6 +313,7 @@ class Auto {
         const minutos = Math.floor(tiempo / 60);
         const segundosRestantes = Math.floor(tiempo % 60);
         const milisegundos = Math.round((tiempo % 1) * 1000);
+        
         return `${minutos}:${segundosRestantes.toString().padStart(2, '0')}.${milisegundos.toString().padStart(3, '0')}`;
     }
 }
