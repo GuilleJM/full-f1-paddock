@@ -1,3 +1,5 @@
+// Pruebas de todas las entidades a la vez, to run: node tests/pruebas
+
 const Auto = require('../entities/Auto');
 const Escuderia = require('../entities/Escuderia');
 const Circuito = require('../entities/Circuito');
