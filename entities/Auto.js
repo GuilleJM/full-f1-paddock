@@ -259,17 +259,16 @@ class Auto {
         if (tipoNeumaticos !== null && tipoNeumaticos !== undefined) {
             this.cambiarNeumaticos(tipoNeumaticos);
             operaciones.push("cambio_neumaticos");
-            tiempoTotal += 2.5;
+            tiempoTotal += 1.9;
         }
 
         if (combustible !== null && combustible !== undefined) {
             this.repostarCombustible(combustible);
             operaciones.push("repostaje");
-            tiempoTotal += 1.8;
+            tiempoTotal += 1.3;
         }
 
         this.estado = "en_boxes";
-
 
         return {
             estado: this.estado,
