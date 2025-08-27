@@ -195,9 +195,7 @@ class Carrera {
     registrarVuelta(auto) {
 
         const tiempoBase = (this.circuito.longitudKm/auto.velocidadMaxima) * 3600;
-        this.circuito.actualizarRecordVuelta(auto.tiempoVuelta, auto.conductor);
 
-        //No anda el factor piloto porque probablemente no accede a los objetos: a revisar
         const factorPiloto = 1 - ((auto.conductor.habilidades.velocidad + auto.conductor.habilidades.consistencia)/200) * 0.1;
 
         let factorNeumaticos = 1.00;
@@ -229,7 +227,6 @@ class Carrera {
 
         auto.tiempoVuelta = tiempoBase * factorClima * factorAleatorio * factorDesgaste * factorNeumaticos * factorPiloto;
 
-
         this.circuito.actualizarRecordVuelta(auto.tiempoVuelta, auto.conductor);
 
         return auto.tiempoVuelta
@@ -243,11 +240,13 @@ class Carrera {
         auto.kmRecorridos += this.circuito.longitudKm;
         auto.tiempoCarrera += tiempoVuelta;
 
-        if(this.vueltaRapida == null || tiempoVuelta < this.vueltaRapida){
+        if(this.vueltaRapida == null || tiempoVuelta < this.vueltaRapida.tiempo){
             this.vueltaRapida = {piloto: auto.conductor, tiempo: tiempoVuelta};
             esVueltaRapida = true;
         }
         auto.conductor.vueltasCompletadas++;
+
+        this.circuito.actualizarRecordVuelta(auto.tiempoVuelta, auto.conductor);
 
         return{
             numeroVuelta: this.vueltaActual,
@@ -296,9 +295,7 @@ class Carrera {
 
         console.log(podio[0]);
         console.log(podio[1]);
-        console.log(this.vueltaRapida);
-
-        /*ALGUIEN QUE CALCULE LOS ADELANTAMIENTOS Y ERRORES DEL PILOTO (UN ERROR ES UNA PERDIDA DE POSICION)*/
+        console.log(this.vueltaRapida.piloto.nombre, this.vueltaRapida.tiempo);
 
         const posicionPorPilotoInicial = new Map(this.posicionesDeSalida.map(pos => [pos.piloto, pos.posicion]));
         const adelantamientos = posicionesFinales.map((auto, index) => {

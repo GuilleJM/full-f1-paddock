@@ -97,8 +97,6 @@ try {
         });
     });
 
-
-
     // Crear pilotos con habilidades
     const piloto1 = new Piloto('Charles Leclerc', 'Mónaco', 0);
     const piloto2 = new Piloto('Carlos Sainz', 'España', 0);
