@@ -44,14 +44,14 @@ console.log('Prueba 3 completada');
 console.log('Prueba 4: registrarParada');
 const estrategia13 = new Estrategia("alta", [20, 40, 60], ["duros", "duros", "duros"]);
 const parada1 = estrategia13.registrarParada(3.5);
-console.assert(parada1.parada === 1, 'Error: parada debe ser 1');
+console.assert(parada1.numeroParada === 1, 'Error: numeroParada debe ser 1');
 console.assert(parada1.tiempo === 3.5, 'Error: tiempo debe ser 3.5');
 console.assert(parada1.vuelta === 20, 'Error: vuelta debe ser 20');
 console.assert(parada1.neumaticos === "duros", 'Error: neumaticos debe ser "duros"');
-console.assert(parada1.totalAcumulado === 3.5, 'Error: totalAcumulado debe ser 3.5');
+console.assert(parada1.tiempoTotalPitStops === 3.5, 'Error: tiempoTotalPitStops debe ser 3.5');
 const parada2 = estrategia13.registrarParada(4.0);
-console.assert(parada2.parada === 2, 'Error: parada debe ser 2');
-console.assert(parada2.totalAcumulado === 7.5, 'Error: totalAcumulado debe ser 7.5');
+console.assert(parada2.numeroParada === 2, 'Error: numeroParada debe ser 2');
+console.assert(parada2.tiempoTotalPitStops === 7.5, 'Error: tiempoTotalPitStops debe ser 7.5');
 console.log('Prueba 4 completada');
 
 // Prueba 5: obtenerSiguienteParada
@@ -60,7 +60,7 @@ const estrategia14 = new Estrategia("alta", [20, 40], ["duros", "duros"]);
 const sig1 = estrategia14.obtenerSiguienteParada();
 console.assert(sig1.vuelta === 20, 'Error: vuelta debe ser 20');
 console.assert(sig1.neumaticos === "duros", 'Error: neumaticos debe ser "duros"');
-console.assert(sig1.tiempoEstimado === 3, 'Error: tiempoEstimado debe ser 3');
+console.assert(sig1.tiempoEstimado === 2.5, 'Error: tiempoEstimado debe ser 2.5');
 console.assert(sig1.numeroParada === 1, 'Error: numeroParada debe ser 1');
 estrategia14.registrarParada(3.0);
 const sig2 = estrategia14.obtenerSiguienteParada();

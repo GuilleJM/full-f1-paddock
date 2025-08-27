@@ -11,17 +11,25 @@ console.log("Prueba 1: esValida");
 const circuito1 = new Circuito("Monaco", 3.3, "urbano");
 const carrera1 = new Carrera("GP Monaco", circuito1, "2024-05-26");
 for (let i = 0; i < 10; i++) {
-    carrera1.autosParticipantes.push(new Auto("Auto" + i, new Piloto("Piloto" + i)));
+    const piloto = new Piloto("Piloto" + i, "Argentina", 0);
+    piloto.establecerHabilidades(70, 65, 60);
+    const auto = new Auto("Auto" + i, "Ferrari", "SF-23", "blandos", 320, 100);
+    auto.conductor = piloto;
+    carrera1.autosParticipantes.push(auto);
 }
 carrera1.condicionesClimaticas = { clima: "seco", temperatura: 25, humedad: 40 };
 console.assert(carrera1.esValida(), "Error: la carrera debería ser válida con 10 autos y condiciones");
 console.log("Prueba 1 completada");
 
 console.log("Prueba 2: calcularNumeroVueltas");
-const circuito2 = new Circuito("Interlagos", 4.3, "alta_degradacion");
+const circuito2 = new Circuito("Interlagos", "Italia", 4.3, "alta_degradacion");
 const carrera2 = new Carrera("GP Brasil", circuito2, "2024-05-26");
 for (let i = 0; i < 12; i++) {
-    carrera2.autosParticipantes.push(new Auto("Auto" + i, new Piloto("Piloto" + i)));
+    const piloto = new Piloto("Piloto" + i, "Brasil", 0);
+    piloto.establecerHabilidades(75, 70, 65);
+    const auto = new Auto("Auto" + i, "Red Bull", "RB19", "medios", 330, 100);
+    auto.conductor = piloto;
+    carrera2.autosParticipantes.push(auto);
 }
 carrera2.condicionesClimaticas = { clima: "seco", temperatura: 28, humedad: 35 };
 const vueltas = carrera2.calcularNumeroVueltas();
@@ -32,7 +40,11 @@ console.log("Prueba 3: realizarClasificacion");
 const circuito3 = new Circuito("Monza", 5.8, "rapido");
 const carrera3 = new Carrera("GP Italia", circuito3, "2024-05-26");
 for (let i = 0; i < 20; i++) {
-    carrera3.autosParticipantes.push(new Auto("Auto" + i, new Piloto("Piloto" + i)));
+    const piloto = new Piloto("Piloto" + i, "Italia", 0);
+    piloto.establecerHabilidades(80, 75, 70);
+    const auto = new Auto("Auto" + i, "Mercedes", "W14", "duros", 325, 100);
+    auto.conductor = piloto;
+    carrera3.autosParticipantes.push(auto);
 }
 carrera3.condicionesClimaticas = { clima: "seco", temperatura: 30, humedad: 20 };
 const clasificacion = carrera3.realizarClasificacion();
@@ -42,8 +54,10 @@ console.log("Prueba 3 completada");
 console.log("Prueba 4: registrarVueltaDeCarrera");
 const circuito4 = new Circuito("Silverstone", 5.9, "rapido");
 const carrera4 = new Carrera("GP UK", circuito4, "2024-05-26");
-const piloto4 = new Piloto("Hamilton");
-const auto4 = new Auto("Mercedes", piloto4);
+const piloto4 = new Piloto("Hamilton", "UK", 0);
+piloto4.establecerHabilidades(95, 90, 85);
+const auto4 = new Auto("Mercedes", "Mercedes", "W14", "blandos", 340, 100);
+auto4.conductor = piloto4;
 carrera4.autosParticipantes.push(auto4);
 carrera4.condicionesClimaticas = { clima: "seco", temperatura: 20, humedad: 50 };
 carrera4.numeroVueltas = 5;
@@ -56,7 +70,11 @@ console.log("Prueba 5: finalizarCarrera");
 const circuito5 = new Circuito("Spa", 7, "mixto");
 const carrera5 = new Carrera("GP Belgica", circuito5, "2024-05-26");
 for (let i = 0; i < 12; i++) {
-    carrera5.autosParticipantes.push(new Auto("Auto" + i, new Piloto("Piloto" + i)));
+    const piloto = new Piloto("Piloto" + i, "Belgica", 0);
+    piloto.establecerHabilidades(85, 80, 75);
+    const auto = new Auto("Auto" + i, "McLaren", "MCL60", "medios", 315, 100);
+    auto.conductor = piloto;
+    carrera5.autosParticipantes.push(auto);
 }
 carrera5.condicionesClimaticas = { clima: "seco", temperatura: 22, humedad: 40 };
 carrera5.numeroVueltas = 3;

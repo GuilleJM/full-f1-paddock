@@ -6,6 +6,8 @@ console.log('\n=== Pruebas para Escuderia ===');
 
 const escuderiaPrueba = new Escuderia('Prueba', 'España', 1000000);
 
+// Guardamos el Math.random original para forzarlo a un valor fijo en pruebas y restaurarlo después
+const originalRandom = Math.random;
 Math.random = () => 0.5; // Forzamos a Math.random a devolver 0.5 para la prueba 1, 2 y 3
 
 // Prueba 1: invertirEnDesarrollo

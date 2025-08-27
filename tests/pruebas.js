@@ -135,102 +135,90 @@ console.assert(stats.estado === "en_boxes", 'Error: estado debe ser "en_boxes"')
 console.log('Prueba 8 completada');
 
 
-// Sección de pruebas para Escuderia
-console.log('\n=== Pruebas para Escuderia ===');
+// Sección de pruebas para Carrera
+console.log("\n=== Pruebas para Carrera ===");
 
-const escuderiaPrueba = new Escuderia('Prueba', 'España', 1000000);
-
-// Guardamos el Math.random original para forzarlo a un valor fijo en pruebas y restaurarlo después
-const originalRandom = Math.random;
-Math.random = () => 0.5; // Forzamos a Math.random a devolver 0.5 para la prueba 1, 2 y 3
-
-// Prueba 1: invertirEnDesarrollo
-console.log('Prueba 1: invertirEnDesarrollo');
-escuderiaPrueba.presupuesto = 1000000;
-escuderiaPrueba.presupuestoInvertido = 0;
-escuderiaPrueba.desarrollo.motor = { nivel: 0, estadisticas: { potencia: 0, eficiencia: 0 } };
-const inversion = escuderiaPrueba.invertirEnDesarrollo('motor', 100000);
-console.assert(inversion.area === 'motor', 'Error: area debe ser "motor"');
-console.assert(inversion.montoInvertido === 100000, 'Error: montoInvertido debe ser 100000');
-console.assert(inversion.presupuestoRestante === 900000, 'Error: presupuestoRestante debe ser 900000');
-console.assert(inversion.nivelAnterior === 0, 'Error: nivelAnterior debe ser 0');
-console.assert(inversion.nivelNuevo === 1, 'Error: nivelNuevo debe ser 1');
-console.assert(escuderiaPrueba.desarrollo.motor.estadisticas.potencia === 5, 'Error: potencia debe ser 5');
-console.assert(escuderiaPrueba.desarrollo.motor.estadisticas.eficiencia === 5, 'Error: eficiencia debe ser 5');
-try {
-    escuderiaPrueba.invertirEnDesarrollo('chasis', 200000);
-    console.assert(false, 'Error: debería lanzar excepción por área no válida');
-} catch (e) {
-    console.assert(e.message === 'Área de desarrollo no válida', 'Error: mensaje de error incorrecto');
+console.log("Prueba 1: esValida");
+const circuito1 = new Circuito("Monaco", 3.3, "urbano");
+const carrera1 = new Carrera("GP Monaco", circuito1, "2024-05-26");
+for (let i = 0; i < 10; i++) {
+    const piloto = new Piloto("Piloto" + i, "Argentina", 0);
+    piloto.establecerHabilidades(70, 65, 60);
+    const auto = new Auto("Auto" + i, "Ferrari", "SF-23", "blandos", 320, 100);
+    auto.conductor = piloto;
+    carrera1.autosParticipantes.push(auto);
 }
-try {
-    escuderiaPrueba.invertirEnDesarrollo('motor', 1000000);
-    console.assert(false, 'Error: debería lanzar excepción por presupuesto insuficiente');
-} catch (e) {
-    console.assert(e.message === 'Presupuesto insuficiente', 'Error: mensaje de error incorrecto');
+carrera1.condicionesClimaticas = { clima: "seco", temperatura: 25, humedad: 40 };
+console.assert(carrera1.esValida(), "Error: la carrera debería ser válida con 10 autos y condiciones");
+console.log("Prueba 1 completada");
+
+console.log("Prueba 2: calcularNumeroVueltas");
+const circuito2 = new Circuito("Interlagos", "Italia", 4.3, "alta_degradacion");
+const carrera2 = new Carrera("GP Brasil", circuito2, "2024-05-26");
+for (let i = 0; i < 12; i++) {
+    const piloto = new Piloto("Piloto" + i, "Brasil", 0);
+    piloto.establecerHabilidades(75, 70, 65);
+    const auto = new Auto("Auto" + i, "Red Bull", "RB19", "medios", 330, 100);
+    auto.conductor = piloto;
+    carrera2.autosParticipantes.push(auto);
 }
-console.log('Prueba 1 completada');
+carrera2.condicionesClimaticas = { clima: "seco", temperatura: 28, humedad: 35 };
+const vueltas = carrera2.calcularNumeroVueltas();
+console.assert(vueltas > 0, "Error: el cálculo de vueltas debería ser mayor que 0");
+console.log("Prueba 2 completada");
 
-// Prueba 2: calcularMejora
-console.log('Prueba 2: calcularMejora');
-escuderiaPrueba.presupuesto = 1000000; // Reiniciar estado
-const mejora = escuderiaPrueba.calcularMejora('motor', 200000);
-console.assert(mejora.area === 'motor', 'Error: area debe ser "motor"');
-console.assert(mejora.mejoraPotencia === 10, 'Error: mejoraPotencia debe ser 10');
-console.assert(mejora.mejoraEficiencia === 10, 'Error: mejoraEficiencia debe ser 10');
-console.assert(mejora.nivelAlcanzado === 2, 'Error: nivelAlcanzado debe ser 2');
-console.log('Prueba 2 completada');
-
-// Prueba 3: esDesarrolloExitoso
-console.log('Prueba 3: esDesarrolloExitoso');
-escuderiaPrueba.presupuesto = 1000000; // Reiniciar estado
-escuderiaPrueba.invertirEnDesarrollo('motor', 100000); // Establece nivelAlcanzado = 1
-const esExitoso1 = escuderiaPrueba.esDesarrolloExitoso(1, 1);
-console.assert(esExitoso1 === true, 'Error: esDesarrolloExitoso debe devolver true (nivelEsperado === nivelAlcanzado)');
-Math.random = () => 0.1; // Esta vez forzamos a Math.random a devolver 0.1 -> Desarrollo no exitoso (0.1 < 0.2)
-escuderiaPrueba.invertirEnDesarrollo('aerodinamica', 100000); // Establece nivelAlcanzado = 0
-const esExitoso2 = escuderiaPrueba.esDesarrolloExitoso(1, 0);
-console.assert(esExitoso2 === false, 'Error: esDesarrolloExitoso debe devolver false (nivelEsperado !== nivelAlcanzado)');
-console.log('Prueba 3 completada');
-
-// Prueba 4: obtenerEstadisticas
-console.log('Prueba 4: obtenerEstadisticas');
-escuderiaPrueba.presupuesto = 1000000; // Reiniciar estado
-escuderiaPrueba.presupuestoInvertido = 0;
-escuderiaPrueba.desarrollo = {
-    motor: { nivel: 0, estadisticas: { potencia: 0, eficiencia: 0 } },
-    aerodinamica: { nivel: 0, estadisticas: { carga: 0, resistencia: 0 } },
-    neumaticos: { nivel: 0, estadisticas: { durabilidad: 0, agarre: 0 } },
-    suspension: { nivel: 0, estadisticas: { estabilidad: 0, respuesta: 0 } }
-};
-escuderiaPrueba.estadisticas = { victorias: 0, podios: 0, vueltasRapidas: 0, abandonos: 0 };
-const estadisticas = escuderiaPrueba.obtenerEstadisticas();
-console.assert(estadisticas.desarrollo.motor.nivel === 0, 'Error: nivel de motor debe ser 0');
-console.assert(estadisticas.rendimiento.victorias === 0, 'Error: victorias debe ser 0');
-console.assert(estadisticas.puntosCampeonato === 0, 'Error: puntosCampeonato debe ser 0');
-console.assert(estadisticas.presupuesto.total === 1000000, 'Error: presupuesto total debe ser 1000000');
-console.assert(estadisticas.presupuesto.disponible === 1000000, 'Error: presupuesto disponible debe ser 1000000');
-console.assert(estadisticas.presupuesto.invertido === 0, 'Error: presupuesto invertido debe ser 0');
-console.log('Prueba 4 completada');
-
-// Prueba 5: actualizarEstadisticas
-console.log('Prueba 5: actualizarEstadisticas');
-escuderiaPrueba.estadisticas = { victorias: 0, podios: 0, vueltasRapidas: 0, abandonos: 0 }; // Reiniciar estado
-const actualizacion = escuderiaPrueba.actualizarEstadisticas('podio', 3);
-console.assert(actualizacion.tipo === 'podio', 'Error: tipo debe ser "podio"');
-console.assert(actualizacion.cantidadAnterior === 0, 'Error: cantidadAnterior debe ser 0');
-console.assert(actualizacion.cantidadNueva === 3, 'Error: cantidadNueva debe ser 3');
-console.assert(actualizacion.estadisticasActualizadas.podios === 3, 'Error: podios debe ser 3');
-try {
-    escuderiaPrueba.actualizarEstadisticas('campeonato', 1);
-    console.assert(false, 'Error: debería lanzar excepción por tipo de estadística no válido');
-} catch (e) {
-    console.assert(e.message === 'Tipo de estadística no válido', 'Error: mensaje de error incorrecto');
+console.log("Prueba 3: realizarClasificacion");
+const circuito3 = new Circuito("Monza", 5.8, "rapido");
+const carrera3 = new Carrera("GP Italia", circuito3, "2024-05-26");
+for (let i = 0; i < 20; i++) {
+    const piloto = new Piloto("Piloto" + i, "Italia", 0);
+    piloto.establecerHabilidades(80, 75, 70);
+    const auto = new Auto("Auto" + i, "Mercedes", "W14", "duros", 325, 100);
+    auto.conductor = piloto;
+    carrera3.autosParticipantes.push(auto);
 }
-console.log('Prueba 5 completada');
+carrera3.condicionesClimaticas = { clima: "seco", temperatura: 30, humedad: 20 };
+const clasificacion = carrera3.realizarClasificacion();
+console.assert(clasificacion.posiciones.length === 20, "Error: la clasificación debería devolver 20 posiciones");
+console.log("Prueba 3 completada");
 
-// Restauramos Math.random al original
-Math.random = originalRandom;
+console.log("Prueba 4: registrarVueltaDeCarrera");
+const circuito4 = new Circuito("Silverstone", 5.9, "rapido");
+const carrera4 = new Carrera("GP UK", circuito4, "2024-05-26");
+const piloto4 = new Piloto("Hamilton", "UK", 0);
+piloto4.establecerHabilidades(95, 90, 85);
+const auto4 = new Auto("Mercedes", "Mercedes", "W14", "blandos", 340, 100);
+auto4.conductor = piloto4;
+carrera4.autosParticipantes.push(auto4);
+carrera4.condicionesClimaticas = { clima: "seco", temperatura: 20, humedad: 50 };
+carrera4.numeroVueltas = 5;
+carrera4.vueltaActual = 1;
+const infoVuelta = carrera4.registrarVueltaDeCarrera(auto4);
+console.assert(infoVuelta.piloto === "Hamilton", "Error: el piloto debería ser Hamilton");
+console.log("Prueba 4 completada");
+
+console.log("Prueba 5: finalizarCarrera");
+const circuito5 = new Circuito("Spa", 7, "mixto");
+const carrera5 = new Carrera("GP Belgica", circuito5, "2024-05-26");
+for (let i = 0; i < 12; i++) {
+    const piloto = new Piloto("Piloto" + i, "Belgica", 0);
+    piloto.establecerHabilidades(85, 80, 75);
+    const auto = new Auto("Auto" + i, "McLaren", "MCL60", "medios", 315, 100);
+    auto.conductor = piloto;
+    carrera5.autosParticipantes.push(auto);
+}
+carrera5.condicionesClimaticas = { clima: "seco", temperatura: 22, humedad: 40 };
+carrera5.numeroVueltas = 3;
+carrera5.vueltaActual = 3;
+carrera5.autosParticipantes.forEach(auto => auto.tiempoCarrera = Math.random() * 500);
+carrera5.posicionesDeSalida = carrera5.autosParticipantes.map((auto, index) => ({
+    piloto: auto.conductor.nombre,
+    posicion: index + 1
+}));
+carrera5.vueltaRapida = { piloto: carrera5.autosParticipantes[0].conductor, tiempo: 85 };
+const resultados = carrera5.finalizarCarrera();
+console.assert(resultados.podio.length === 3, "Error: el podio debería contener 3 posiciones");
+console.log("Prueba 5 completada");
 
 
 // Sección de pruebas para Circuito
@@ -373,6 +361,171 @@ console.assert(statsCircuitoConRecord.numeroCurvas === 0, 'Error: numeroCurvas d
 console.assert(statsCircuitoConRecord.recordVuelta.tiempo === 71.553, 'Error: recordVuelta.tiempo debe ser 71.553');
 console.assert(statsCircuitoConRecord.dificultadPromedio === 'media', 'Error: dificultadPromedio debe ser "media"');
 console.log('Prueba 6 completada');
+
+
+// Sección de pruebas para Escuderia
+console.log('\n=== Pruebas para Escuderia ===');
+
+const escuderiaPrueba = new Escuderia('Prueba', 'España', 1000000);
+
+// Guardamos el Math.random original para forzarlo a un valor fijo en pruebas y restaurarlo después
+const originalRandom = Math.random;
+Math.random = () => 0.5; // Forzamos a Math.random a devolver 0.5 para la prueba 1, 2 y 3
+
+// Prueba 1: invertirEnDesarrollo
+console.log('Prueba 1: invertirEnDesarrollo');
+escuderiaPrueba.presupuesto = 1000000;
+escuderiaPrueba.presupuestoInvertido = 0;
+escuderiaPrueba.desarrollo.motor = { nivel: 0, estadisticas: { potencia: 0, eficiencia: 0 } };
+const inversion = escuderiaPrueba.invertirEnDesarrollo('motor', 100000);
+console.assert(inversion.area === 'motor', 'Error: area debe ser "motor"');
+console.assert(inversion.montoInvertido === 100000, 'Error: montoInvertido debe ser 100000');
+console.assert(inversion.presupuestoRestante === 900000, 'Error: presupuestoRestante debe ser 900000');
+console.assert(inversion.nivelAnterior === 0, 'Error: nivelAnterior debe ser 0');
+console.assert(inversion.nivelNuevo === 1, 'Error: nivelNuevo debe ser 1');
+console.assert(escuderiaPrueba.desarrollo.motor.estadisticas.potencia === 5, 'Error: potencia debe ser 5');
+console.assert(escuderiaPrueba.desarrollo.motor.estadisticas.eficiencia === 5, 'Error: eficiencia debe ser 5');
+try {
+    escuderiaPrueba.invertirEnDesarrollo('chasis', 200000);
+    console.assert(false, 'Error: debería lanzar excepción por área no válida');
+} catch (e) {
+    console.assert(e.message === 'Área de desarrollo no válida', 'Error: mensaje de error incorrecto');
+}
+try {
+    escuderiaPrueba.invertirEnDesarrollo('motor', 1000000);
+    console.assert(false, 'Error: debería lanzar excepción por presupuesto insuficiente');
+} catch (e) {
+    console.assert(e.message === 'Presupuesto insuficiente', 'Error: mensaje de error incorrecto');
+}
+console.log('Prueba 1 completada');
+
+// Prueba 2: calcularMejora
+console.log('Prueba 2: calcularMejora');
+escuderiaPrueba.presupuesto = 1000000; // Reiniciar estado
+const mejora = escuderiaPrueba.calcularMejora('motor', 200000);
+console.assert(mejora.area === 'motor', 'Error: area debe ser "motor"');
+console.assert(mejora.mejoraPotencia === 10, 'Error: mejoraPotencia debe ser 10');
+console.assert(mejora.mejoraEficiencia === 10, 'Error: mejoraEficiencia debe ser 10');
+console.assert(mejora.nivelAlcanzado === 2, 'Error: nivelAlcanzado debe ser 2');
+console.log('Prueba 2 completada');
+
+// Prueba 3: esDesarrolloExitoso
+console.log('Prueba 3: esDesarrolloExitoso');
+escuderiaPrueba.presupuesto = 1000000; // Reiniciar estado
+escuderiaPrueba.invertirEnDesarrollo('motor', 100000); // Establece nivelAlcanzado = 1
+const esExitoso1 = escuderiaPrueba.esDesarrolloExitoso(1, 1);
+console.assert(esExitoso1 === true, 'Error: esDesarrolloExitoso debe devolver true (nivelEsperado === nivelAlcanzado)');
+Math.random = () => 0.1; // Esta vez forzamos a Math.random a devolver 0.1 -> Desarrollo no exitoso (0.1 < 0.2)
+escuderiaPrueba.invertirEnDesarrollo('aerodinamica', 100000); // Establece nivelAlcanzado = 0
+const esExitoso2 = escuderiaPrueba.esDesarrolloExitoso(1, 0);
+console.assert(esExitoso2 === false, 'Error: esDesarrolloExitoso debe devolver false (nivelEsperado !== nivelAlcanzado)');
+console.log('Prueba 3 completada');
+
+// Prueba 4: obtenerEstadisticas
+console.log('Prueba 4: obtenerEstadisticas');
+escuderiaPrueba.presupuesto = 1000000; // Reiniciar estado
+escuderiaPrueba.presupuestoInvertido = 0;
+escuderiaPrueba.desarrollo = {
+    motor: { nivel: 0, estadisticas: { potencia: 0, eficiencia: 0 } },
+    aerodinamica: { nivel: 0, estadisticas: { carga: 0, resistencia: 0 } },
+    neumaticos: { nivel: 0, estadisticas: { durabilidad: 0, agarre: 0 } },
+    suspension: { nivel: 0, estadisticas: { estabilidad: 0, respuesta: 0 } }
+};
+escuderiaPrueba.estadisticas = { victorias: 0, podios: 0, vueltasRapidas: 0, abandonos: 0 };
+const estadisticas = escuderiaPrueba.obtenerEstadisticas();
+console.assert(estadisticas.desarrollo.motor.nivel === 0, 'Error: nivel de motor debe ser 0');
+console.assert(estadisticas.rendimiento.victorias === 0, 'Error: victorias debe ser 0');
+console.assert(estadisticas.puntosCampeonato === 0, 'Error: puntosCampeonato debe ser 0');
+console.assert(estadisticas.presupuesto.total === 1000000, 'Error: presupuesto total debe ser 1000000');
+console.assert(estadisticas.presupuesto.disponible === 1000000, 'Error: presupuesto disponible debe ser 1000000');
+console.assert(estadisticas.presupuesto.invertido === 0, 'Error: presupuesto invertido debe ser 0');
+console.log('Prueba 4 completada');
+
+// Prueba 5: actualizarEstadisticas
+console.log('Prueba 5: actualizarEstadisticas');
+escuderiaPrueba.estadisticas = { victorias: 0, podios: 0, vueltasRapidas: 0, abandonos: 0 }; // Reiniciar estado
+const actualizacion = escuderiaPrueba.actualizarEstadisticas('podio', 3);
+console.assert(actualizacion.tipo === 'podio', 'Error: tipo debe ser "podio"');
+console.assert(actualizacion.cantidadAnterior === 0, 'Error: cantidadAnterior debe ser 0');
+console.assert(actualizacion.cantidadNueva === 3, 'Error: cantidadNueva debe ser 3');
+console.assert(actualizacion.estadisticasActualizadas.podios === 3, 'Error: podios debe ser 3');
+try {
+    escuderiaPrueba.actualizarEstadisticas('campeonato', 1);
+    console.assert(false, 'Error: debería lanzar excepción por tipo de estadística no válido');
+} catch (e) {
+    console.assert(e.message === 'Tipo de estadística no válido', 'Error: mensaje de error incorrecto');
+}
+console.log('Prueba 5 completada');
+
+// Restauramos Math.random al original
+Math.random = originalRandom;
+
+// Sección de pruebas para Estrategia
+console.log('\n=== Pruebas para Estrategia ===');
+
+// Prueba 1: esOptima
+console.log('Prueba 1: esOptima');
+const estrategia1 = new Estrategia("alta", [20, 40, 60], ["duros", "duros", "duros"]);
+console.assert(estrategia1.esOptima() === true, 'Error: debe devolver true (estrategia válida)');
+const estrategia2 = new Estrategia("alta", [20], ["duros"]);
+console.assert(estrategia2.esOptima() === false, 'Error: debe devolver false (menos de 2 paradas)');
+const estrategia3 = new Estrategia("alta", [20, 40, 60, 80, 100], ["duros", "duros", "duros", "duros", "duros"]);
+console.assert(estrategia3.esOptima() === false, 'Error: debe devolver false (más de 4 paradas)');
+const estrategia4 = new Estrategia("alta", [5, 40, 60], ["duros", "duros", "duros"]);
+console.assert(estrategia4.esOptima() === false, 'Error: debe devolver false (primer intervalo fuera de rango)');
+const estrategia5 = new Estrategia("baja", [20, 35, 50], ["blandos", "blandos", "blandos"]);
+console.assert(estrategia5.esOptima() === true, 'Error: debe devolver true (estrategia baja válida)');
+console.log('Prueba 1 completada');
+
+// Prueba 2: paradasDistribuidasUniformemente
+console.log('Prueba 2: paradasDistribuidasUniformemente');
+const estrategia6 = new Estrategia("alta", [20, 40, 60], ["duros", "duros", "duros"]);
+console.assert(estrategia6.paradasDistribuidasUniformemente() === true, 'Error: debe devolver true (paradas uniformes)');
+const estrategia7 = new Estrategia("alta", [10, 25, 50], ["duros", "duros", "duros"]);
+console.assert(estrategia7.paradasDistribuidasUniformemente() === false, 'Error: debe devolver false (primer intervalo fuera de rango)');
+const estrategia8 = new Estrategia("alta", [20, 40, 70], ["duros", "duros", "duros"]);
+console.assert(estrategia8.paradasDistribuidasUniformemente() === false, 'Error: debe devolver false (diferencia entre intervalos > 5)');
+console.log('Prueba 2 completada');
+
+// Prueba 3: agresividadConsistente
+console.log('Prueba 3: agresividadConsistente');
+const estrategia9 = new Estrategia("alta", [20, 40, 60], ["duros", "duros", "duros"]);
+console.assert(estrategia9.agresividadConsistente() === true, 'Error: debe devolver true (alta con duros)');
+const estrategia10 = new Estrategia("alta", [20, 40, 60], ["blandos", "duros", "duros"]);
+console.assert(estrategia10.agresividadConsistente() === false, 'Error: debe devolver false (alta pero con blandos)');
+const estrategia11 = new Estrategia("baja", [20, 40, 60], ["blandos", "blandos", "blandos"]);
+console.assert(estrategia11.agresividadConsistente() === true, 'Error: debe devolver true (baja con blandos)');
+const estrategia12 = new Estrategia("baja", [20, 40, 60], ["duros", "blandos", "blandos"]);
+console.assert(estrategia12.agresividadConsistente() === false, 'Error: debe devolver false (baja pero con duros)');
+console.log('Prueba 3 completada');
+
+// Prueba 4: registrarParada
+console.log('Prueba 4: registrarParada');
+const estrategia13 = new Estrategia("alta", [20, 40, 60], ["duros", "duros", "duros"]);
+const parada1 = estrategia13.registrarParada(3.5);
+console.assert(parada1.numeroParada === 1, 'Error: numeroParada debe ser 1');
+console.assert(parada1.tiempo === 3.5, 'Error: tiempo debe ser 3.5');
+console.assert(parada1.vuelta === 20, 'Error: vuelta debe ser 20');
+console.assert(parada1.neumaticos === "duros", 'Error: neumaticos debe ser "duros"');
+console.assert(parada1.tiempoTotalPitStops === 3.5, 'Error: tiempoTotalPitStops debe ser 3.5');
+const parada2 = estrategia13.registrarParada(4.0);
+console.assert(parada2.numeroParada === 2, 'Error: numeroParada debe ser 2');
+console.assert(parada2.tiempoTotalPitStops === 7.5, 'Error: tiempoTotalPitStops debe ser 7.5');
+console.log('Prueba 4 completada');
+
+// Prueba 5: obtenerSiguienteParada
+console.log('Prueba 5: obtenerSiguienteParada');
+const estrategia14 = new Estrategia("alta", [20, 40], ["duros", "duros"]);
+const sig1 = estrategia14.obtenerSiguienteParada();
+console.assert(sig1.vuelta === 20, 'Error: vuelta debe ser 20');
+console.assert(sig1.neumaticos === "duros", 'Error: neumaticos debe ser "duros"');
+console.assert(sig1.tiempoEstimado === 2.5, 'Error: tiempoEstimado debe ser 2.5');
+console.assert(sig1.numeroParada === 1, 'Error: numeroParada debe ser 1');
+estrategia14.registrarParada(3.0);
+const sig2 = estrategia14.obtenerSiguienteParada();
+console.assert(sig2.vuelta === 40, 'Error: vuelta debe ser 40');
+console.assert(sig2.numeroParada === 2, 'Error: numeroParada debe ser 2');
+console.log('Prueba 5 completada');
 
 
 // Sección de pruebas para Piloto
@@ -619,158 +772,4 @@ console.assert(estilo3.ajustes.agresividad === '-20', 'Error: ajustes.agresivida
 console.assert(estilo3.ajustes.consistencia === '+15', 'Error: ajustes.consistencia debe ser "+15"');
 console.assert(pilotoPrueba.habilidades.agresividad === 65, 'Error: pilotoPrueba.agresividad debe ser 85 - 20 = 65');
 console.assert(pilotoPrueba.habilidades.consistencia === 105, 'Error: pilotoPrueba.consistencia debe ser 90 + 15 = 105');
-console.log('Prueba 9 completada');
-
-
-// Sección de pruebas para Estrategia
-console.log('\n=== Pruebas para Estrategia ===');
-
-// Prueba 1: esOptima
-console.log('Prueba 1: esOptima');
-const estrategia1 = new Estrategia("alta", [20, 40, 60], ["duros", "duros", "duros"]);
-console.assert(estrategia1.esOptima() === true, 'Error: debe devolver true (estrategia válida)');
-const estrategia2 = new Estrategia("alta", [20], ["duros"]);
-console.assert(estrategia2.esOptima() === false, 'Error: debe devolver false (menos de 2 paradas)');
-const estrategia3 = new Estrategia("alta", [20, 40, 60, 80, 100], ["duros", "duros", "duros", "duros", "duros"]);
-console.assert(estrategia3.esOptima() === false, 'Error: debe devolver false (más de 4 paradas)');
-const estrategia4 = new Estrategia("alta", [5, 40, 60], ["duros", "duros", "duros"]);
-console.assert(estrategia4.esOptima() === false, 'Error: debe devolver false (primer intervalo fuera de rango)');
-const estrategia5 = new Estrategia("baja", [20, 35, 50], ["blandos", "blandos", "blandos"]);
-console.assert(estrategia5.esOptima() === true, 'Error: debe devolver true (estrategia baja válida)');
-console.log('Prueba 1 completada');
-
-// Prueba 2: paradasDistribuidasUniformemente
-console.log('Prueba 2: paradasDistribuidasUniformemente');
-const estrategia6 = new Estrategia("alta", [20, 40, 60], ["duros", "duros", "duros"]);
-console.assert(estrategia6.paradasDistribuidasUniformemente() === true, 'Error: debe devolver true (paradas uniformes)');
-const estrategia7 = new Estrategia("alta", [10, 25, 50], ["duros", "duros", "duros"]);
-console.assert(estrategia7.paradasDistribuidasUniformemente() === false, 'Error: debe devolver false (primer intervalo fuera de rango)');
-const estrategia8 = new Estrategia("alta", [20, 40, 70], ["duros", "duros", "duros"]);
-console.assert(estrategia8.paradasDistribuidasUniformemente() === false, 'Error: debe devolver false (diferencia entre intervalos > 5)');
-console.log('Prueba 2 completada');
-
-// Prueba 3: agresividadConsistente
-console.log('Prueba 3: agresividadConsistente');
-const estrategia9 = new Estrategia("alta", [20, 40, 60], ["duros", "duros", "duros"]);
-console.assert(estrategia9.agresividadConsistente() === true, 'Error: debe devolver true (alta con duros)');
-const estrategia10 = new Estrategia("alta", [20, 40, 60], ["blandos", "duros", "duros"]);
-console.assert(estrategia10.agresividadConsistente() === false, 'Error: debe devolver false (alta pero con blandos)');
-const estrategia11 = new Estrategia("baja", [20, 40, 60], ["blandos", "blandos", "blandos"]);
-console.assert(estrategia11.agresividadConsistente() === true, 'Error: debe devolver true (baja con blandos)');
-const estrategia12 = new Estrategia("baja", [20, 40, 60], ["duros", "blandos", "blandos"]);
-console.assert(estrategia12.agresividadConsistente() === false, 'Error: debe devolver false (baja pero con duros)');
-console.log('Prueba 3 completada');
-
-// Prueba 4: registrarParada
-console.log('Prueba 4: registrarParada');
-const estrategia13 = new Estrategia("alta", [20, 40, 60], ["duros", "duros", "duros"]);
-const parada1 = estrategia13.registrarParada(3.5);
-console.assert(parada1.numeroParada === 1, 'Error: numeroParada debe ser 1');
-console.assert(parada1.tiempo === 3.5, 'Error: tiempo debe ser 3.5');
-console.assert(parada1.vuelta === 20, 'Error: vuelta debe ser 20');
-console.assert(parada1.neumaticos === "duros", 'Error: neumaticos debe ser "duros"');
-console.assert(parada1.tiempoTotalPitStops === 3.5, 'Error: tiempoTotalPitStops debe ser 3.5');
-const parada2 = estrategia13.registrarParada(4.0);
-console.assert(parada2.numeroParada === 2, 'Error: numeroParada debe ser 2');
-console.assert(parada2.tiempoTotalPitStops === 7.5, 'Error: tiempoTotalPitStops debe ser 7.5');
-console.log('Prueba 4 completada');
-
-// Prueba 5: obtenerSiguienteParada
-console.log('Prueba 5: obtenerSiguienteParada');
-const estrategia14 = new Estrategia("alta", [20, 40], ["duros", "duros"]);
-const sig1 = estrategia14.obtenerSiguienteParada();
-console.assert(sig1.vuelta === 20, 'Error: vuelta debe ser 20');
-console.assert(sig1.neumaticos === "duros", 'Error: neumaticos debe ser "duros"');
-console.assert(sig1.tiempoEstimado === 2.5, 'Error: tiempoEstimado debe ser 2.5');
-console.assert(sig1.numeroParada === 1, 'Error: numeroParada debe ser 1');
-estrategia14.registrarParada(3.0);
-const sig2 = estrategia14.obtenerSiguienteParada();
-console.assert(sig2.vuelta === 40, 'Error: vuelta debe ser 40');
-console.assert(sig2.numeroParada === 2, 'Error: numeroParada debe ser 2');
-console.log('Prueba 5 completada');
-
-
-// Sección de pruebas para Carrera
-console.log("\n=== Pruebas para Carrera ===");
-
-console.log("Prueba 1: esValida");
-const circuito1 = new Circuito("Monaco", 3.3, "urbano");
-const carrera1 = new Carrera("GP Monaco", circuito1, "2024-05-26");
-for (let i = 0; i < 10; i++) {
-    const piloto = new Piloto("Piloto" + i, "Argentina", 0);
-    piloto.establecerHabilidades(70, 65, 60);
-    const auto = new Auto("Auto" + i, "Ferrari", "SF-23", "blandos", 320, 100);
-    auto.conductor = piloto;
-    carrera1.autosParticipantes.push(auto);
-}
-carrera1.condicionesClimaticas = { clima: "seco", temperatura: 25, humedad: 40 };
-console.assert(carrera1.esValida(), "Error: la carrera debería ser válida con 10 autos y condiciones");
-console.log("Prueba 1 completada");
-
-console.log("Prueba 2: calcularNumeroVueltas");
-const circuito2 = new Circuito("Interlagos", 4.3, "alta_degradacion");
-const carrera2 = new Carrera("GP Brasil", circuito2, "2024-05-26");
-for (let i = 0; i < 12; i++) {
-    const piloto = new Piloto("Piloto" + i, "Brasil", 0);
-    piloto.establecerHabilidades(75, 70, 65);
-    const auto = new Auto("Auto" + i, "Red Bull", "RB19", "medios", 330, 100);
-    auto.conductor = piloto;
-    carrera2.autosParticipantes.push(auto);
-}
-carrera2.condicionesClimaticas = { clima: "seco", temperatura: 28, humedad: 35 };
-const vueltas = carrera2.calcularNumeroVueltas();
-console.assert(vueltas > 0, "Error: el cálculo de vueltas debería ser mayor que 0");
-console.log("Prueba 2 completada");
-
-console.log("Prueba 3: realizarClasificacion");
-const circuito3 = new Circuito("Monza", 5.8, "rapido");
-const carrera3 = new Carrera("GP Italia", circuito3, "2024-05-26");
-for (let i = 0; i < 20; i++) {
-    const piloto = new Piloto("Piloto" + i, "Italia", 0);
-    piloto.establecerHabilidades(80, 75, 70);
-    const auto = new Auto("Auto" + i, "Mercedes", "W14", "duros", 325, 100);
-    auto.conductor = piloto;
-    carrera3.autosParticipantes.push(auto);
-}
-carrera3.condicionesClimaticas = { clima: "seco", temperatura: 30, humedad: 20 };
-const clasificacion = carrera3.realizarClasificacion();
-console.assert(clasificacion.posiciones.length === 20, "Error: la clasificación debería devolver 20 posiciones");
-console.log("Prueba 3 completada");
-
-console.log("Prueba 4: registrarVueltaDeCarrera");
-const circuito4 = new Circuito("Silverstone", 5.9, "rapido");
-const carrera4 = new Carrera("GP UK", circuito4, "2024-05-26");
-const piloto4 = new Piloto("Hamilton", "UK", 0);
-piloto4.establecerHabilidades(95, 90, 85);
-const auto4 = new Auto("Mercedes", "Mercedes", "W14", "blandos", 340, 100);
-auto4.conductor = piloto4;
-carrera4.autosParticipantes.push(auto4);
-carrera4.condicionesClimaticas = { clima: "seco", temperatura: 20, humedad: 50 };
-carrera4.numeroVueltas = 5;
-carrera4.vueltaActual = 1;
-const infoVuelta = carrera4.registrarVueltaDeCarrera(auto4);
-console.assert(infoVuelta.piloto === "Hamilton", "Error: el piloto debería ser Hamilton");
-console.log("Prueba 4 completada");
-
-console.log("Prueba 5: finalizarCarrera");
-const circuito5 = new Circuito("Spa", 7, "mixto");
-const carrera5 = new Carrera("GP Belgica", circuito5, "2024-05-26");
-for (let i = 0; i < 12; i++) {
-    const piloto = new Piloto("Piloto" + i, "Belgica", 0);
-    piloto.establecerHabilidades(85, 80, 75);
-    const auto = new Auto("Auto" + i, "McLaren", "MCL60", "medios", 315, 100);
-    auto.conductor = piloto;
-    carrera5.autosParticipantes.push(auto);
-}
-carrera5.condicionesClimaticas = { clima: "seco", temperatura: 22, humedad: 40 };
-carrera5.numeroVueltas = 3;
-carrera5.vueltaActual = 3;
-carrera5.autosParticipantes.forEach(auto => auto.tiempoCarrera = Math.random() * 500);
-carrera5.posicionesDeSalida = carrera5.autosParticipantes.map((auto, index) => ({
-    piloto: auto.conductor.nombre,
-    posicion: index + 1
-}));
-carrera5.vueltaRapida = { piloto: carrera5.autosParticipantes[0].conductor, tiempo: 85 };
-const resultados = carrera5.finalizarCarrera();
-console.assert(resultados.podio.length === 3, "Error: el podio debería contener 3 posiciones");
-console.log("Prueba 5 completada");
+console.log('Prueba 9 completada\n');

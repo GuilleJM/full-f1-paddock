@@ -92,11 +92,13 @@ class Estrategia {
      * // Returns: true si la agresividad es consistente con la estrategia
      */
     agresividadConsistente() {
+
         if (this.agresividad === "alta") {
             return this.tiposNeumaticos.every(n => n === "duros");
         } else if (this.agresividad === "baja") {
             return this.tiposNeumaticos.every(n => n === "blandos");
         }
+        
         return true;
     }
 
