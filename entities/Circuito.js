@@ -1,5 +1,5 @@
 class Circuito {
-    constructor(nombre, ubicacion, longitudKm) {
+    constructor(nombre, ubicacion, longitudKm, tipo) {
         this.nombre = nombre;
         this.ubicacion = ubicacion;
         this.longitudKm = longitudKm;
@@ -9,8 +9,10 @@ class Circuito {
         this.condicionesClimaticas = {
             clima: 'seco',
             temperatura: 25,
-            humedad: 50
+            humedad: 50,
+            visibilidad: 'alta'
         };
+        this.tipo = tipo; /*Añadido para facilitar cálculos*/
     }
 
     /**
@@ -32,7 +34,21 @@ class Circuito {
      * // Returns: true
      */
     esDesafiante() {
-        // Implementar lógica para determinar si el circuito es desafiante
+
+        const numCurvas = this.curvas.length;
+        const numZonasDRS = this.zonasDRS.length;
+        const dificultadPromedio = this.curvas.reduce((acc, curva) => {
+            if (curva.dificultad === 'alta') return acc + 3;
+            if (curva.dificultad === 'media') return acc + 2;
+            return acc + 1;
+        }, 0) / numCurvas;
+
+        return (
+            numCurvas > 10 &&
+            numZonasDRS >= 2 &&
+            this.longitudKm > 5 &&
+            dificultadPromedio > 2
+        );
     }
 
     /**
@@ -53,7 +69,20 @@ class Circuito {
      * // }
      */
     agregarCurva(nombre, velocidadMaxima, dificultad) {
-        // Implementar lógica para agregar una curva al circuito
+
+        if(nombre == null || velocidadMaxima == null || dificultad == null){
+            throw new Error("No se aportaron las características necesarias");
+        }
+
+        const curva = {
+            nombre,
+            velocidadMaxima,
+            dificultad,
+            numeroCurva: this.curvas.length + 1
+        };
+
+        this.curvas.push(curva);
+        return curva;
     }
 
     /**
@@ -72,7 +101,19 @@ class Circuito {
      * // }
      */
     agregarZonaDRS(nombre, longitud) {
-        // Implementar lógica para agregar una zona DRS
+
+        if(nombre == null || longitud == null){
+            throw new Error("No se aportaron las características necesarias");
+        }
+
+        const zonaDRS = {
+            nombre,
+            longitud,
+            numeroZona: this.zonasDRS.length + 1
+        };
+
+        this.zonasDRS.push(zonaDRS);
+        return zonaDRS;
     }
 
     /**
@@ -93,7 +134,24 @@ class Circuito {
      * // }
      */
     establecerCondicionesClimaticas(clima, temperatura, humedad) {
-        // Implementar lógica para establecer condiciones climáticas
+
+        if(clima == null || temperatura == null || humedad == null){
+            throw new Error("No se aportaron las características necesarias");
+        }
+
+        let visibilidad = "alta";
+
+        if((clima).toLowerCase() == "humedo" && humedad >= 50){
+            visibilidad = "media";
+        }
+
+        if((clima).toLowerCase() == "lluvia" && humedad >= 80){
+            visibilidad = "baja";
+        }
+
+        this.condicionesClimaticas = { clima, temperatura, humedad, visibilidad };
+
+        return this.condicionesClimaticas;
     }
 
     /**
@@ -113,7 +171,16 @@ class Circuito {
      * // }
      */
     actualizarRecordVuelta(tiempo, piloto) {
-        // Implementar lógica para actualizar el record de vuelta
+
+        const esNuevoRecord = !this.recordVuelta || tiempo < this.recordVuelta.tiempo;
+        if (esNuevoRecord) {
+            this.recordVuelta = { tiempo, piloto, fecha: new Date().toISOString().split('T')[0] };
+        }
+
+        return {
+            ...this.recordVuelta,
+            esNuevoRecord
+        };
     }
 
     /**
@@ -140,7 +207,22 @@ class Circuito {
      * // }
      */
     obtenerEstadisticasCircuito() {
-        // Implementar lógica para obtener estadísticas del circuito
+
+        const dificultadPromedio = this.curvas.length > 0
+            ? this.curvas.reduce((acc, curva) => {
+                if (curva.dificultad === 'alta') return acc + 3;
+                if (curva.dificultad === 'media') return acc + 2;
+                return acc + 1;
+              }, 0) / this.curvas.length
+            : 0;
+        
+        return {
+            numeroCurvas: this.curvas.length,
+            zonasDRS: this.zonasDRS.length,
+            recordVuelta: this.recordVuelta,
+            condicionesActuales: this.condicionesClimaticas,
+            dificultadPromedio: dificultadPromedio > 2 ? 'alta' : 'media'
+        };
     }
 }
 

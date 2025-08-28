@@ -1,12 +1,13 @@
 class Estrategia {
-    constructor(numeroParadas, tiposNeumaticos, vueltasParada, agresividad) {
-        this.numeroParadas = numeroParadas;
-        this.tiposNeumaticos = tiposNeumaticos;
-        this.vueltasParada = vueltasParada;
+    constructor(agresividad, vueltasParada, tiposNeumaticos) {
         this.agresividad = agresividad;
+        this.vueltasParada = vueltasParada;
+        this.tiposNeumaticos = tiposNeumaticos;
+        this.numeroParadas = vueltasParada.length;
         this.paradasRealizadas = 0;
         this.tiempoTotalPitStops = 0;
     }
+
 
     /**
      * Valida si la estrategia es óptima según las condiciones de la carrera
@@ -26,8 +27,10 @@ class Estrategia {
      * // Returns: true si la estrategia es óptima para una carrera de 60 vueltas
      */
     esOptima() {
-        // Implementar lógica para validar estrategia óptima
-    }
+        var result = false;
+        if ( this.numeroParadas <= 4 && this.numeroParadas >= 2 &&  this.agresividadConsistente() && this.paradasDistribuidasUniformemente()){
+            result = true;};
+        return result;}
 
     /**
      * Verifica si las paradas están distribuidas uniformemente
@@ -44,10 +47,31 @@ class Estrategia {
      *   "media"
      * );
      * const distribucion = estrategia.paradasDistribuidasUniformemente();
-     * // Returns: true si los intervalos entre paradas son similares
+
      */
     paradasDistribuidasUniformemente() {
-        // Implementar lógica para validar distribución de paradas
+        let result = true;
+
+        let intervalo = this.vueltasParada[0] - 0;
+        if (intervalo < 15 || intervalo > 25) {
+            result = false;
+            return result;
+        }
+
+        let ultimoIntervalo = intervalo;
+        for (let i = 1; i < this.vueltasParada.length; i++) {
+            let intervalo = this.vueltasParada[i] - this.vueltasParada[i - 1];
+            if (intervalo < 10 || intervalo > 20) {
+                result = false;
+                break;
+            }
+            if (intervalo - ultimoIntervalo > 5 || intervalo - ultimoIntervalo < -5) {
+                result = false;
+                break;
+            }
+            ultimoIntervalo = intervalo;
+        }
+        return result;
     }
 
     /**
@@ -68,8 +92,16 @@ class Estrategia {
      * // Returns: true si la agresividad es consistente con la estrategia
      */
     agresividadConsistente() {
-        // Implementar lógica para validar agresividad
+
+        if (this.agresividad === "alta") {
+            return this.tiposNeumaticos.every(n => n === "duros");
+        } else if (this.agresividad === "baja") {
+            return this.tiposNeumaticos.every(n => n === "blandos");
+        }
+        
+        return true;
     }
+
 
     /**
      * Registra una parada en boxes con su tiempo
@@ -93,8 +125,14 @@ class Estrategia {
      * // }
      */
     registrarParada(tiempo) {
-        // Implementar lógica para registrar parada
-    }
+        this.paradasRealizadas = this.paradasRealizadas + 1;
+        this.tiempoTotalPitStops = this.tiempoTotalPitStops + tiempo
+        return({
+            numeroParada: this.paradasRealizadas,
+            tiempo: tiempo,
+            vuelta: this.vueltasParada[this.paradasRealizadas - 1],
+            neumaticos: this.tiposNeumaticos[this.paradasRealizadas - 1],
+            tiempoTotalPitStops: this.tiempoTotalPitStops})}
 
     /**
      * Obtiene información sobre la próxima parada programada
@@ -116,7 +154,11 @@ class Estrategia {
      * // }
      */
     obtenerSiguienteParada() {
-        // Implementar lógica para obtener siguiente parada
+        return({
+            vuelta: this.vueltasParada[this.paradasRealizadas],
+            neumaticos: this.tiposNeumaticos[this.paradasRealizadas],
+            tiempoEstimado: 2.5,
+            numeroParada: this.paradasRealizadas + 1})
     }
 }
 
