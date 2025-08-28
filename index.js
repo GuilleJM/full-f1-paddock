@@ -288,7 +288,7 @@ try {
         console.log(`${piloto.nombre}:`);
         console.log(`- Puntos en el campeonato: ${stats.puntosCampeonato}`);
         console.log(`- Vueltas rápidas: ${stats.general.vueltasRapidas}`);
-        console.log(`- Podios: ${stats.general.podios}`);
+        console.log(`- Podios: ${stats.general.podios} \n`);
     });
 
 } catch (error) {
